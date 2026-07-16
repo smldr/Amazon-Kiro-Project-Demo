@@ -290,6 +290,11 @@ async function startGhostReplay(state, elements, levelConfig) {
 
       // Redraw visualisation with ghost dot overlay (for levels 1-2)
       redrawWithGhost(state, elements, levelConfig);
+
+      // Update ghost markers on sliders (all levels — especially useful for 3D+)
+      if (state.sliderController && ghostState.position) {
+        state.sliderController.setGhostPositions(ghostState.position);
+      }
     });
 
     // Start the replay

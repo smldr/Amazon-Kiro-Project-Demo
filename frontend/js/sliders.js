@@ -28,6 +28,7 @@ export function createSliders(container, levelConfig, onChange, onRelease) {
 
   const sliders = [];
   const valueDisplays = [];
+  const ghostMarkers = [];
 
   for (let i = 0; i < dimensions; i++) {
     const row = document.createElement("div");
@@ -39,6 +40,10 @@ export function createSliders(container, levelConfig, onChange, onRelease) {
     label.textContent = `x${subscript(i + 1)}`;
     row.appendChild(label);
 
+    // Slider wrapper (needed for ghost marker positioning)
+    const sliderWrap = document.createElement("div");
+    sliderWrap.className = "slider-row__wrap";
+
     // Slider input
     const input = document.createElement("input");
     input.type = "range";
@@ -48,7 +53,15 @@ export function createSliders(container, levelConfig, onChange, onRelease) {
     input.step = step;
     input.value = randomStart(min, max);
     input.setAttribute("aria-label", `Variable x${i + 1}`);
-    row.appendChild(input);
+    sliderWrap.appendChild(input);
+
+    // Ghost marker (hidden by default, shown in AI mode)
+    const ghostMarker = document.createElement("div");
+    ghostMarker.className = "slider-row__ghost-marker";
+    ghostMarker.setAttribute("aria-hidden", "true");
+    sliderWrap.appendChild(ghostMarker);
+
+    row.appendChild(sliderWrap);
 
     // Value display
     const valueSpan = document.createElement("span");
@@ -59,6 +72,7 @@ export function createSliders(container, levelConfig, onChange, onRelease) {
     container.appendChild(row);
     sliders.push(input);
     valueDisplays.push(valueSpan);
+    ghostMarkers.push(ghostMarker);
 
     // Event listeners — update on input (real-time) for visualisation
     input.addEventListener("input", () => {
@@ -91,12 +105,34 @@ export function createSliders(container, levelConfig, onChange, onRelease) {
     container.innerHTML = "";
     sliders.length = 0;
     valueDisplays.length = 0;
+    ghostMarkers.length = 0;
+  }
+
+  /**
+   * Update ghost marker positions on all sliders.
+   * @param {number[]} positions - Array of ghost values, one per slider
+   */
+  function setGhostPositions(positions) {
+    positions.forEach((val, i) => {
+      if (ghostMarkers[i] && sliders[i]) {
+        const pct = ((val - min) / (max - min)) * 100;
+        ghostMarkers[i].style.left = `${pct}%`;
+        ghostMarkers[i].style.display = "block";
+      }
+    });
+  }
+
+  /**
+   * Hide all ghost markers.
+   */
+  function hideGhostMarkers() {
+    ghostMarkers.forEach((m) => (m.style.display = "none"));
   }
 
   // Fire initial callback with starting values
   onChange(getValues());
 
-  return { getValues, setValues, destroy };
+  return { getValues, setValues, destroy, setGhostPositions, hideGhostMarkers };
 }
 
 /**

@@ -341,7 +341,7 @@ h2 {
 }
 
 .slider-row__input {
-  flex: 1;
+  width: 100%;
   -webkit-appearance: none;
   appearance: none;
   height: 8px;
@@ -404,6 +404,35 @@ h2 {
   color: var(--text-secondary);
   min-width: 48px;
   text-align: right;
+}
+
+/* Slider wrapper — positions ghost marker relative to track */
+.slider-row__wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.slider-row__wrap .slider-row__input {
+  width: 100%;
+}
+
+/* Ghost marker — lavender dot showing AI position on the slider track */
+.slider-row__ghost-marker {
+  display: none;
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-ghost);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.85;
+  box-shadow: 0 0 6px var(--color-ghost);
+  transition: left 0.15s ease-out;
+  z-index: 2;
 }
 
 /* ============================================================
