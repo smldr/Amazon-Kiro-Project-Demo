@@ -700,10 +700,10 @@ function renderLevelSelector(container, state, elements) {
 
     if (isLocked(level.id)) {
       btn.disabled = true;
-      btn.textContent = `🔒 ${level.id}D`;
+      btn.textContent = `🔒 ${level.dimensions}D`;
       btn.title = `${level.description} (locked — complete previous level to unlock)`;
     } else {
-      btn.textContent = `${level.id}D`;
+      btn.textContent = `${level.dimensions}D`;
 
       btn.addEventListener("click", () => {
         state.currentLevel = level.id;
