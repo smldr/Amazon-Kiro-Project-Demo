@@ -189,7 +189,10 @@
           <p id="comparison-verdict" class="ai-comparison__verdict"></p>
         </div>
 
-        <a href="index.html" class="btn btn--primary btn--full">Back to Menu</a>
+        <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
+          <button class="btn btn--primary btn--full" id="next-level-btn" style="display: none;">Next Level →</button>
+          <a href="index.html" class="btn btn--ghost btn--full">Back to Menu</a>
+        </div>
       </div>
     </div>
 
@@ -233,6 +236,7 @@
       ghostEvals: document.getElementById("ghost-evals"),
       ghostAlgorithmLabel: document.getElementById("ghost-algorithm-label"),
       comparisonVerdict: document.getElementById("comparison-verdict"),
+      nextLevelBtn: document.getElementById("next-level-btn"),
     };
 
     // Initialise game

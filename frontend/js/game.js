@@ -477,6 +477,34 @@ function showScoreResult(state, elements, backendResult = null) {
     showAiComparison(state, elements);
   }
 
+  // Show "Next Level" button if there's a next level to go to
+  if (elements.nextLevelBtn) {
+    const maxLevel = LEVELS[LEVELS.length - 1].id;
+    if (state.currentLevel < maxLevel) {
+      elements.nextLevelBtn.style.display = "block";
+      elements.nextLevelBtn.onclick = () => {
+        // Hide the overlay
+        if (elements.scoreResultOverlay) {
+          elements.scoreResultOverlay.style.display = "none";
+        }
+        // Advance to next level
+        state.currentLevel = state.currentLevel + 1;
+        // Show submit section again
+        if (elements.submitSection) {
+          elements.submitSection.style.display = "block";
+          if (elements.submitBtn) {
+            elements.submitBtn.disabled = false;
+          }
+        }
+        // Re-render level selector and load new level
+        renderLevelSelector(elements.levelSelector, state, elements);
+        loadLevel(state, elements);
+      };
+    } else {
+      elements.nextLevelBtn.style.display = "none";
+    }
+  }
+
   if (elements.scoreResultOverlay) {
     elements.scoreResultOverlay.style.display = "flex";
   }
