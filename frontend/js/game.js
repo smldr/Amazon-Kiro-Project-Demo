@@ -158,9 +158,9 @@ function loadLevel(state, elements) {
   // Update budget display
   updateBudgetDisplay(state, elements);
 
-  // Show/hide visualisation based on dimensions
+  // Show visualisation for all levels (parallel coords for 3D+)
   if (elements.visContainer) {
-    elements.visContainer.style.display = levelConfig.dimensions <= 2 ? "block" : "none";
+    elements.visContainer.style.display = "block";
   }
 
   // Destroy old sliders
@@ -218,6 +218,12 @@ function onSliderChange(values, state, elements, levelConfig) {
     // Overlay ghost dot if in AI mode
     if (state.ghostState && state.ghostState.position) {
       state.vis.drawGhostDot2D(state.ghostState.position[0], state.ghostState.position[1], levelConfig.range);
+    }
+  } else if (state.vis && levelConfig.dimensions >= 3) {
+    state.vis.drawParallelCoords(values, levelConfig.range);
+    // Overlay ghost polyline if in AI mode
+    if (state.ghostState && state.ghostState.position) {
+      state.vis.drawGhostParallelCoords(state.ghostState.position, levelConfig.range);
     }
   }
 }
@@ -308,7 +314,6 @@ async function startGhostReplay(state, elements, levelConfig) {
 /** Redraw visualisation with ghost dot overlaid. */
 function redrawWithGhost(state, elements, levelConfig) {
   if (!state.vis || !state.ghostState) return;
-  if (levelConfig.dimensions > 2) return; // No visualisation for 3D+
 
   const ghostPos = state.ghostState.position;
 
@@ -320,6 +325,10 @@ function redrawWithGhost(state, elements, levelConfig) {
     // Redraw full 2D plot (player), then overlay ghost
     state.vis.draw2D(state.currentValues[0], state.currentValues[1], levelConfig.range);
     state.vis.drawGhostDot2D(ghostPos[0], ghostPos[1], levelConfig.range);
+  } else if (levelConfig.dimensions >= 3 && state.currentValues.length >= 3) {
+    // Redraw parallel coords (player), then overlay ghost polyline
+    state.vis.drawParallelCoords(state.currentValues, levelConfig.range);
+    state.vis.drawGhostParallelCoords(ghostPos, levelConfig.range);
   }
 }
 

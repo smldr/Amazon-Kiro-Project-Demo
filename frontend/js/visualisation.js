@@ -350,6 +350,143 @@ export function createVisualisation(canvas) {
     ctx.fill();
   }
 
+  /**
+   * Draw a parallel coordinates plot for N-dimensional data.
+   * Each dimension gets a vertical axis. The player's position is a polyline.
+   *
+   * @param {number[]} values - Player's current position (one value per dimension)
+   * @param {number[]} range - [min, max] range for all dimensions
+   */
+  function drawParallelCoords(values, range) {
+    const [min, max] = range;
+    const n = values.length;
+    const w = canvas.width / dpr;
+    const h = canvas.height / dpr;
+    const padding = { top: 25, right: 30, bottom: 30, left: 30 };
+    const plotW = w - padding.left - padding.right;
+    const plotH = h - padding.top - padding.bottom;
+
+    clear();
+
+    // Spacing between axes
+    const axisSpacing = plotW / (n - 1 || 1);
+
+    // Draw axes
+    ctx.strokeStyle = COLORS.surface1;
+    ctx.lineWidth = 1;
+    for (let i = 0; i < n; i++) {
+      const x = padding.left + i * axisSpacing;
+
+      // Axis line
+      ctx.beginPath();
+      ctx.moveTo(x, padding.top);
+      ctx.lineTo(x, padding.top + plotH);
+      ctx.stroke();
+
+      // Axis label
+      ctx.fillStyle = COLORS.overlay0;
+      ctx.font = "9px monospace";
+      ctx.textAlign = "center";
+      ctx.fillText(`x${subscriptStr(i + 1)}`, x, h - 8);
+
+      // Range labels (top = max, bottom = min)
+      ctx.fillStyle = COLORS.surface1;
+      ctx.font = "8px monospace";
+      ctx.fillText(max.toFixed(0), x, padding.top - 6);
+      ctx.fillText(min.toFixed(0), x, padding.top + plotH + 14);
+    }
+
+    // Draw zero line across all axes
+    const zeroY = padding.top + plotH * (max / (max - min));
+    ctx.strokeStyle = COLORS.overlay0;
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(padding.left, zeroY);
+    ctx.lineTo(padding.left + plotW, zeroY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw player polyline
+    ctx.strokeStyle = COLORS.yellow;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const x = padding.left + i * axisSpacing;
+      const y = padding.top + plotH - ((values[i] - min) / (max - min)) * plotH;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Draw player dots on each axis
+    for (let i = 0; i < n; i++) {
+      const x = padding.left + i * axisSpacing;
+      const y = padding.top + plotH - ((values[i] - min) / (max - min)) * plotH;
+
+      ctx.fillStyle = COLORS.yellow;
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = COLORS.base;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  }
+
+  /**
+   * Overlay the ghost's position on the parallel coordinates plot.
+   *
+   * @param {number[]} ghostValues - Ghost's current position
+   * @param {number[]} range - [min, max] range
+   */
+  function drawGhostParallelCoords(ghostValues, range) {
+    const [min, max] = range;
+    const n = ghostValues.length;
+    const w = canvas.width / dpr;
+    const h = canvas.height / dpr;
+    const padding = { top: 25, right: 30, bottom: 30, left: 30 };
+    const plotW = w - padding.left - padding.right;
+    const plotH = h - padding.top - padding.bottom;
+    const axisSpacing = plotW / (n - 1 || 1);
+
+    // Draw ghost polyline
+    ctx.strokeStyle = COLORS.lavender;
+    ctx.lineWidth = 2.5;
+    ctx.globalAlpha = 0.8;
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const x = padding.left + i * axisSpacing;
+      const y = padding.top + plotH - ((ghostValues[i] - min) / (max - min)) * plotH;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Draw ghost dots on each axis
+    for (let i = 0; i < n; i++) {
+      const x = padding.left + i * axisSpacing;
+      const y = padding.top + plotH - ((ghostValues[i] - min) / (max - min)) * plotH;
+
+      ctx.fillStyle = COLORS.lavender;
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = COLORS.base;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  }
+
+  /** Helper: generate subscript string for axis labels. */
+  function subscriptStr(n) {
+    const subs = "\u2080\u2081\u2082\u2083\u2084\u2085\u2086\u2087\u2088\u2089";
+    return String(n).split("").map((d) => subs[parseInt(d)]).join("");
+  }
+
   // Initial resize
   resize();
 
@@ -358,5 +495,5 @@ export function createVisualisation(canvas) {
     resize();
   });
 
-  return { draw1D, draw2D, drawGhostDot1D, drawGhostDot2D, clear, resize };
+  return { draw1D, draw2D, drawParallelCoords, drawGhostDot1D, drawGhostDot2D, drawGhostParallelCoords, clear, resize };
 }
