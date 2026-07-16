@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1e1e2e">
+  <title>OptimGame — Find the Minimum</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="page">
+    <div class="container stack stack--lg" style="text-align: center;">
+
+      <!-- Title -->
+      <header class="stack stack--sm">
+        <h1>OptimGame</h1>
+        <p class="text-secondary">Find the global minimum. Beat the leaderboard.</p>
+      </header>
+
+      <!-- Nickname Input -->
+      <div class="card stack">
+        <label for="nickname" class="text-secondary" style="font-size: 0.85rem; text-align: left;">
+          Choose a nickname
+        </label>
+        <input
+          type="text"
+          id="nickname"
+          class="input"
+          placeholder="Enter nickname..."
+          maxlength="20"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+
+      <!-- Mode Selection -->
+      <div class="mode-buttons">
+        <button class="btn btn--primary btn--full" id="btn-explore">
+          Explore
+        </button>
+        <button class="btn btn--secondary btn--full" id="btn-challenge" disabled>
+          Challenge
+        </button>
+      </div>
+
+      <div class="divider">or</div>
+
+      <button class="btn btn--ghost btn--full" id="btn-ai" disabled>
+        You vs. AI
+      </button>
+
+      <!-- Hints -->
+      <div class="stack stack--sm" style="margin-top: var(--space-md);">
+        <p class="text-muted" style="font-size: 0.75rem;">
+          <strong>Explore</strong> — Free play. Learn the landscape.
+        </p>
+        <p class="text-muted" style="font-size: 0.75rem;">
+          <strong>Challenge</strong> — Limited moves. Compete on the leaderboard.
+        </p>
+        <p class="text-muted" style="font-size: 0.75rem;">
+          <strong>You vs. AI</strong> — Race an optimization algorithm.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module">
+    const nicknameInput = document.getElementById("nickname");
+    const btnExplore = document.getElementById("btn-explore");
+    const btnChallenge = document.getElementById("btn-challenge");
+    const btnAi = document.getElementById("btn-ai");
+
+    // Enable challenge button when nickname is provided
+    nicknameInput.addEventListener("input", () => {
+      const hasName = nicknameInput.value.trim().length > 0;
+      btnChallenge.disabled = !hasName;
+      // AI mode stays locked until presenter unlocks it (future feature)
+    });
+
+    // Navigate to game with mode param
+    function goToGame(mode) {
+      const nickname = nicknameInput.value.trim() || "player";
+      const params = new URLSearchParams({ mode, level: "1", nickname });
+      window.location.href = `game.html?${params.toString()}`;
+    }
+
+    btnExplore.addEventListener("click", () => goToGame("explore"));
+    btnChallenge.addEventListener("click", () => goToGame("challenge"));
+    btnAi.addEventListener("click", () => goToGame("ai"));
+
+    // Auto-focus nickname on desktop
+    if (window.innerWidth > 768) {
+      nicknameInput.focus();
+    }
+  </script>
+</body>
+</html>

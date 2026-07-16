@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1e1e2e">
+  <title>OptimGame — Playing</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .game-page {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: var(--space-md);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .fn-display {
+      text-align: center;
+      padding: var(--space-md) 0;
+    }
+
+    .vis-canvas {
+      width: 100%;
+      height: 250px;
+    }
+
+    .game-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-sm) 0;
+      margin-top: auto;
+    }
+
+    @media (min-width: 768px) {
+      .game-page {
+        max-width: 900px;
+      }
+
+      .game-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-lg);
+        align-items: start;
+      }
+
+      .vis-canvas {
+        height: 350px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="game-page">
+
+    <!-- Header -->
+    <header class="game-header">
+      <span class="game-header__level" id="level-label">Level 1</span>
+      <span class="game-header__budget" id="budget-label">Budget: 40</span>
+    </header>
+
+    <!-- Level Selector -->
+    <nav class="level-selector" id="level-selector" aria-label="Level selection"></nav>
+
+    <!-- Function Value Display -->
+    <section class="fn-display">
+      <div class="fn-value" id="fn-value">f(x) = 0.0000</div>
+      <div class="progress-bar" style="margin-top: var(--space-sm);">
+        <div class="progress-bar__fill" id="progress-fill" style="width: 0%;"></div>
+      </div>
+    </section>
+
+    <!-- Game Content: Sliders + Visualisation -->
+    <div class="game-content">
+      <!-- Sliders -->
+      <section class="card">
+        <h2 style="margin-bottom: var(--space-sm); font-size: 0.85rem;" class="text-secondary">
+          Adjust variables
+        </h2>
+        <div class="slider-group" id="slider-container"></div>
+      </section>
+
+      <!-- Visualisation -->
+      <section class="vis-container" id="vis-container">
+        <canvas class="vis-canvas" id="vis-canvas"></canvas>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="game-footer">
+      <a href="index.html" class="btn btn--ghost" style="font-size: 0.8rem;">← Back</a>
+      <span class="text-muted mono" style="font-size: 0.75rem;" id="mode-label"></span>
+    </footer>
+
+  </main>
+
+  <script type="module">
+    import { initGame } from "./js/game.js";
+
+    // Grab DOM elements
+    const elements = {
+      sliderContainer: document.getElementById("slider-container"),
+      canvas: document.getElementById("vis-canvas"),
+      fnValue: document.getElementById("fn-value"),
+      progressFill: document.getElementById("progress-fill"),
+      levelLabel: document.getElementById("level-label"),
+      budgetLabel: document.getElementById("budget-label"),
+      visContainer: document.getElementById("vis-container"),
+      levelSelector: document.getElementById("level-selector"),
+    };
+
+    // Initialise game
+    const state = initGame(elements);
+
+    // Show mode label
+    const modeLabel = document.getElementById("mode-label");
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode") || "explore";
+    const nickname = params.get("nickname") || "player";
+    modeLabel.textContent = `${mode} · ${nickname}`;
+  </script>
+</body>
+</html>
