@@ -142,27 +142,29 @@ export function createVisualisation(canvas) {
     clear();
 
     // Generate or use cached heatmap
-    const rangeKey = `${min},${max},${Math.round(plotW)},${Math.round(plotH)}`;
+    // Use a fixed resolution for the heatmap to avoid expensive recomputation
+    const heatmapRes = 100; // 100x100 grid, then stretch to fill
+    const rangeKey = `${min},${max},${heatmapRes}`;
     if (!heatmapCache || cachedRange !== rangeKey) {
-      heatmapCache = generateHeatmap(min, max, Math.round(plotW), Math.round(plotH));
+      heatmapCache = generateHeatmapCanvas(min, max, heatmapRes, heatmapRes);
       cachedRange = rangeKey;
     }
 
-    // Draw heatmap
-    ctx.putImageData(heatmapCache, padding.left, padding.top);
+    // Draw heatmap using drawImage (respects transform, scales correctly)
+    ctx.drawImage(heatmapCache, padding.left, padding.top, plotW, plotH);
 
     // Draw axis labels
     ctx.fillStyle = COLORS.overlay0;
     ctx.font = "9px monospace";
     ctx.textAlign = "center";
-    ctx.fillText(`x₁: ${min}`, padding.left, h - 3);
+    ctx.fillText(`x\u2081: ${min}`, padding.left, h - 3);
     ctx.fillText(`${max}`, w - padding.right, h - 3);
 
     ctx.save();
     ctx.translate(8, padding.top + plotH / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = "center";
-    ctx.fillText("x₂", 0, 0);
+    ctx.fillText("x\u2082", 0, 0);
     ctx.restore();
 
     // Draw player position
@@ -201,8 +203,15 @@ export function createVisualisation(canvas) {
     ctx.fill();
   }
 
-  function generateHeatmap(min, max, width, height) {
-    const imageData = ctx.createImageData(width, height);
+  /**
+   * Generate heatmap as an offscreen canvas (so drawImage respects transforms).
+   */
+  function generateHeatmapCanvas(min, max, width, height) {
+    const offscreen = document.createElement("canvas");
+    offscreen.width = width;
+    offscreen.height = height;
+    const offCtx = offscreen.getContext("2d");
+    const imageData = offCtx.createImageData(width, height);
     const data = imageData.data;
 
     // Pre-compute max value for normalisation
@@ -221,7 +230,7 @@ export function createVisualisation(canvas) {
 
     // Map values to colours
     for (let i = 0; i < values.length; i++) {
-      const t = Math.min(values[i] / Math.max(maxVal * 0.5, 1), 1); // Normalise with compression
+      const t = Math.min(values[i] / Math.max(maxVal * 0.5, 1), 1);
       const [r, g, b] = heatColor(t);
       const idx = i * 4;
       data[idx] = r;
@@ -230,7 +239,8 @@ export function createVisualisation(canvas) {
       data[idx + 3] = 255;
     }
 
-    return imageData;
+    offCtx.putImageData(imageData, 0, 0);
+    return offscreen;
   }
 
   function heatColor(t) {
