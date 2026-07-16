@@ -13,7 +13,8 @@
 import { griewank } from "./griewank.js";
 import { createSliders } from "./sliders.js";
 import { createVisualisation } from "./visualisation.js";
-import { submitScore as postScore, getRound } from "./api.js";
+import { submitScore as postScore, getRound, getGhost } from "./api.js";
+import { createGhostPlayer } from "./ghost.js";
 
 // ============================================================
 // Level Configuration
@@ -161,6 +162,9 @@ export function initGame(elements) {
     vis: null,
     gameOver: false,
     submitted: false,
+    ghostPlayer: null,
+    ghostState: null,
+    ghostData: null,
   };
 
   // Initialise visualisation
@@ -221,6 +225,24 @@ function loadLevel(state, elements) {
     (values) => onSliderChange(values, state, elements, levelConfig),
     (values) => onSliderRelease(values, state, elements, levelConfig)
   );
+
+  // Hide ghost display by default
+  if (elements.ghostDisplay) {
+    elements.ghostDisplay.style.display = "none";
+  }
+
+  // Stop any existing ghost player
+  if (state.ghostPlayer) {
+    state.ghostPlayer.stop();
+    state.ghostPlayer = null;
+    state.ghostState = null;
+    state.ghostData = null;
+  }
+
+  // In AI mode, fetch and start ghost replay
+  if (state.mode === MODES.AI) {
+    startGhostReplay(state, elements, levelConfig);
+  }
 }
 
 /**
@@ -240,8 +262,16 @@ function onSliderChange(values, state, elements, levelConfig) {
   // Update visualisation
   if (state.vis && levelConfig.dimensions === 1) {
     state.vis.draw1D(values[0], levelConfig.range);
+    // Overlay ghost dot if in AI mode
+    if (state.ghostState && state.ghostState.position) {
+      state.vis.drawGhostDot1D(state.ghostState.position[0], levelConfig.range);
+    }
   } else if (state.vis && levelConfig.dimensions === 2) {
     state.vis.draw2D(values[0], values[1], levelConfig.range);
+    // Overlay ghost dot if in AI mode
+    if (state.ghostState && state.ghostState.position) {
+      state.vis.drawGhostDot2D(state.ghostState.position[0], state.ghostState.position[1], levelConfig.range);
+    }
   }
 }
 
@@ -272,6 +302,83 @@ function onSliderRelease(values, state, elements, levelConfig) {
     state.gameOver = true;
     // Auto-submit when budget exhausted
     submitScore(state, elements);
+  }
+}
+
+// ============================================================
+// Ghost Replay (AI Mode)
+// ============================================================
+
+/**
+ * Fetch ghost data and start the ghost replay for the current level.
+ * Updates the ghost display and overlays the ghost dot on visualisation.
+ */
+async function startGhostReplay(state, elements, levelConfig) {
+  try {
+    const ghostData = await getGhost(levelConfig.id);
+
+    // Store ghost data on state for comparison summary (Requirement 6.5)
+    state.ghostData = ghostData;
+
+    // Create ghost player
+    state.ghostPlayer = createGhostPlayer({ rate: 1000 });
+
+    // Show ghost display
+    if (elements.ghostDisplay) {
+      elements.ghostDisplay.style.display = "block";
+    }
+
+    // Set algorithm name and total evals
+    if (elements.ghostAlgorithm) {
+      elements.ghostAlgorithm.textContent = ghostData.algorithm || "CMA-ES";
+    }
+    if (elements.ghostTotalEvals) {
+      elements.ghostTotalEvals.textContent = ghostData.budget;
+    }
+
+    // On each tick, update ghost display and redraw visualisation with ghost overlay
+    state.ghostPlayer.onTick((ghostState) => {
+      if (!ghostState) return;
+      state.ghostState = ghostState;
+
+      // Update ghost text display
+      if (elements.ghostFnValue) {
+        elements.ghostFnValue.textContent = ghostState.value.toFixed(4);
+      }
+      if (elements.ghostEvalCount) {
+        elements.ghostEvalCount.textContent = ghostState.eval;
+      }
+
+      // Redraw visualisation with ghost dot overlay (for levels 1-2)
+      redrawWithGhost(state, elements, levelConfig);
+    });
+
+    // Start the replay
+    state.ghostPlayer.start(ghostData);
+  } catch (e) {
+    console.warn("Failed to load ghost data:", e.message);
+    // Ghost unavailable — game continues without it
+  }
+}
+
+/**
+ * Redraw the visualisation with the ghost dot overlaid.
+ * The player dot is drawn first (via draw1D/draw2D), then the ghost dot on top.
+ */
+function redrawWithGhost(state, elements, levelConfig) {
+  if (!state.vis || !state.ghostState) return;
+  if (levelConfig.dimensions > 2) return; // No visualisation for 3D+
+
+  const ghostPos = state.ghostState.position;
+
+  if (levelConfig.dimensions === 1 && state.currentValues.length >= 1) {
+    // Redraw full 1D plot (player), then overlay ghost
+    state.vis.draw1D(state.currentValues[0], levelConfig.range);
+    state.vis.drawGhostDot1D(ghostPos[0], levelConfig.range);
+  } else if (levelConfig.dimensions === 2 && state.currentValues.length >= 2) {
+    // Redraw full 2D plot (player), then overlay ghost
+    state.vis.draw2D(state.currentValues[0], state.currentValues[1], levelConfig.range);
+    state.vis.drawGhostDot2D(ghostPos[0], ghostPos[1], levelConfig.range);
   }
 }
 
@@ -427,9 +534,92 @@ function showScoreResult(state, elements, backendResult = null) {
     elements.rankDisplay.style.display = "block";
   }
 
+  // Show AI comparison summary in AI mode
+  if (state.mode === MODES.AI && state.ghostData) {
+    showAiComparison(state, elements);
+  }
+
   if (elements.scoreResultOverlay) {
     elements.scoreResultOverlay.style.display = "flex";
   }
+}
+
+/**
+ * Show the AI comparison summary in the score result overlay.
+ * Displays player's result vs. the ghost's result side by side,
+ * with a verdict indicating who performed better.
+ *
+ * Requirement 6.5: Display comparison summary when both ghost and player have
+ * exhausted their budgets.
+ *
+ * @param {object} state - Current game state (must have ghostData set)
+ * @param {object} elements - DOM element references
+ */
+function showAiComparison(state, elements) {
+  if (!elements.aiComparison) return;
+
+  const ghostData = state.ghostData;
+  if (!ghostData) return;
+
+  const playerScore = state.currentScore;
+  const playerEvals = state.evalsUsed;
+  const ghostScore = ghostData.final_value;
+  const ghostBudget = ghostData.budget;
+  const algorithm = ghostData.algorithm || "CMA-ES";
+
+  // Populate player results
+  if (elements.playerResult) {
+    elements.playerResult.textContent = playerScore.toFixed(4);
+  }
+  if (elements.playerEvals) {
+    elements.playerEvals.textContent = playerEvals;
+  }
+
+  // Populate ghost results
+  if (elements.ghostAlgorithmLabel) {
+    elements.ghostAlgorithmLabel.textContent = `${algorithm}:`;
+  }
+  if (elements.ghostResult) {
+    elements.ghostResult.textContent = ghostScore.toFixed(4);
+  }
+  if (elements.ghostEvals) {
+    elements.ghostEvals.textContent = ghostBudget;
+  }
+
+  // Determine winner (lower score is better)
+  const playerRow = elements.aiComparison.querySelector(".ai-comparison__row--player");
+  const ghostRow = elements.aiComparison.querySelector(".ai-comparison__row--ghost");
+
+  if (elements.comparisonVerdict) {
+    // Remove existing verdict classes
+    elements.comparisonVerdict.classList.remove(
+      "ai-comparison__verdict--player-wins",
+      "ai-comparison__verdict--ghost-wins",
+      "ai-comparison__verdict--tie"
+    );
+
+    if (playerRow) playerRow.classList.remove("ai-comparison__row--winner");
+    if (ghostRow) ghostRow.classList.remove("ai-comparison__row--winner");
+
+    if (Math.abs(playerScore - ghostScore) < 1e-6) {
+      // Tie
+      elements.comparisonVerdict.textContent = "It's a tie!";
+      elements.comparisonVerdict.classList.add("ai-comparison__verdict--tie");
+    } else if (playerScore < ghostScore) {
+      // Player wins
+      elements.comparisonVerdict.textContent = "You beat the AI!";
+      elements.comparisonVerdict.classList.add("ai-comparison__verdict--player-wins");
+      if (playerRow) playerRow.classList.add("ai-comparison__row--winner");
+    } else {
+      // Ghost wins
+      elements.comparisonVerdict.textContent = `${algorithm} wins this round.`;
+      elements.comparisonVerdict.classList.add("ai-comparison__verdict--ghost-wins");
+      if (ghostRow) ghostRow.classList.add("ai-comparison__row--winner");
+    }
+  }
+
+  // Show the comparison section
+  elements.aiComparison.style.display = "block";
 }
 
 /**

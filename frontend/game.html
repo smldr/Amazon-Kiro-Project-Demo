@@ -81,6 +81,9 @@
     <!-- Function Value Display -->
     <section class="fn-display">
       <div class="fn-value" id="fn-value">f(x) = 0.0000</div>
+      <div class="ghost-value" id="ghost-display" style="display: none; margin-top: var(--space-xs); font-size: 0.85rem; color: var(--lavender, #b4befe);">
+        AI (<span id="ghost-algorithm">CMA-ES</span>): f(x) = <span id="ghost-fn-value">0.0000</span> — Eval: <span id="ghost-eval-count">0</span>/<span id="ghost-total-evals">40</span>
+      </div>
       <div class="progress-bar" style="margin-top: var(--space-sm);">
         <div class="progress-bar__fill" id="progress-fill" style="width: 0%;"></div>
       </div>
@@ -116,6 +119,23 @@
         <div class="fn-value" id="final-score-display" style="margin-bottom: var(--space-md);">f(x) = 0.0000</div>
         <p class="text-secondary" id="rank-display" style="display: none; margin-bottom: var(--space-sm); color: var(--accent-secondary);"></p>
         <p class="text-secondary" id="evals-used-display" style="margin-bottom: var(--space-lg);"></p>
+
+        <!-- AI Comparison Summary (visible in AI mode only) -->
+        <div id="ai-comparison" class="ai-comparison" style="display: none;">
+          <h3 class="ai-comparison__title">You vs. AI</h3>
+          <div class="ai-comparison__row ai-comparison__row--player">
+            <span class="ai-comparison__label">You:</span>
+            <strong id="player-result" class="ai-comparison__value"></strong>
+            <span class="ai-comparison__evals">in <span id="player-evals"></span> evals</span>
+          </div>
+          <div class="ai-comparison__row ai-comparison__row--ghost">
+            <span class="ai-comparison__label" id="ghost-algorithm-label">CMA-ES:</span>
+            <strong id="ghost-result" class="ai-comparison__value"></strong>
+            <span class="ai-comparison__evals">in <span id="ghost-evals"></span> evals</span>
+          </div>
+          <p id="comparison-verdict" class="ai-comparison__verdict"></p>
+        </div>
+
         <a href="index.html" class="btn btn--primary btn--full">Back to Menu</a>
       </div>
     </div>
@@ -147,6 +167,19 @@
       finalScoreDisplay: document.getElementById("final-score-display"),
       rankDisplay: document.getElementById("rank-display"),
       evalsUsedDisplay: document.getElementById("evals-used-display"),
+      ghostDisplay: document.getElementById("ghost-display"),
+      ghostAlgorithm: document.getElementById("ghost-algorithm"),
+      ghostFnValue: document.getElementById("ghost-fn-value"),
+      ghostEvalCount: document.getElementById("ghost-eval-count"),
+      ghostTotalEvals: document.getElementById("ghost-total-evals"),
+      // AI comparison elements
+      aiComparison: document.getElementById("ai-comparison"),
+      playerResult: document.getElementById("player-result"),
+      playerEvals: document.getElementById("player-evals"),
+      ghostResult: document.getElementById("ghost-result"),
+      ghostEvals: document.getElementById("ghost-evals"),
+      ghostAlgorithmLabel: document.getElementById("ghost-algorithm-label"),
+      comparisonVerdict: document.getElementById("comparison-verdict"),
     };
 
     // Initialise game

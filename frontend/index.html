@@ -46,9 +46,12 @@
 
       <div class="divider">or</div>
 
-      <button class="btn btn--ghost btn--full" id="btn-ai" disabled>
+      <button class="btn btn--ghost btn--full" id="btn-ai" disabled title="Waiting for presenter to unlock">
         You vs. AI
       </button>
+      <p class="text-muted ai-lock-status" id="ai-lock-status" style="font-size: 0.75rem; margin-top: calc(-1 * var(--space-sm));">
+        &#x1F512; Locked by presenter
+      </p>
 
       <!-- Hints -->
       <div class="stack stack--sm" style="margin-top: var(--space-md);">
@@ -67,17 +70,43 @@
   </main>
 
   <script type="module">
+    import { getRound } from './js/api.js';
+
     const nicknameInput = document.getElementById("nickname");
     const btnExplore = document.getElementById("btn-explore");
     const btnChallenge = document.getElementById("btn-challenge");
     const btnAi = document.getElementById("btn-ai");
+    const aiLockStatus = document.getElementById("ai-lock-status");
 
-    // Enable challenge button when nickname is provided
-    nicknameInput.addEventListener("input", () => {
+    let aiUnlocked = false;
+
+    /**
+     * Check round state from backend and update AI unlock status.
+     * If no round exists or AI mode is not unlocked, keep button disabled.
+     */
+    async function checkRoundState() {
+      try {
+        const round = await getRound();
+        if (round && round.ai_mode_unlocked) {
+          aiUnlocked = true;
+          aiLockStatus.style.display = "none";
+          btnAi.removeAttribute("title");
+        }
+      } catch (e) {
+        // Network error — keep AI locked
+      }
+      updateButtonStates();
+    }
+
+    /** Update button enabled/disabled states based on nickname + AI unlock. */
+    function updateButtonStates() {
       const hasName = nicknameInput.value.trim().length > 0;
       btnChallenge.disabled = !hasName;
-      // AI mode stays locked until presenter unlocks it (future feature)
-    });
+      btnAi.disabled = !(hasName && aiUnlocked);
+    }
+
+    // Update buttons on nickname input
+    nicknameInput.addEventListener("input", updateButtonStates);
 
     // Navigate to game with mode param
     function goToGame(mode) {
@@ -94,6 +123,9 @@
     if (window.innerWidth > 768) {
       nicknameInput.focus();
     }
+
+    // Check round state on page load
+    checkRoundState();
   </script>
 </body>
 </html>

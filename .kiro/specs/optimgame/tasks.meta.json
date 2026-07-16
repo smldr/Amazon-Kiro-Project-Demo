@@ -302,6 +302,16 @@
         "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
         "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
         "timestamp": 1784206189198
+      },
+      {
+        "executionId": "5246e998-153e-42ba-9ec1-250a06cfbc29",
+        "chatSessionId": "sess_93c12c82-54b1-48ba-a808-5e5439c062d0",
+        "timestamp": 1784211914188
+      },
+      {
+        "executionId": "5246e998-153e-42ba-9ec1-250a06cfbc29",
+        "chatSessionId": "sess_93c12c82-54b1-48ba-a808-5e5439c062d0",
+        "timestamp": 1784212560397
       }
     ],
     "5.2 Add comparison summary": [
@@ -314,6 +324,16 @@
         "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
         "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
         "timestamp": 1784206189233
+      },
+      {
+        "executionId": "5246e998-153e-42ba-9ec1-250a06cfbc29",
+        "chatSessionId": "sess_93c12c82-54b1-48ba-a808-5e5439c062d0",
+        "timestamp": 1784211915124
+      },
+      {
+        "executionId": "5246e998-153e-42ba-9ec1-250a06cfbc29",
+        "chatSessionId": "sess_93c12c82-54b1-48ba-a808-5e5439c062d0",
+        "timestamp": 1784212561235
       }
     ],
     "5.3 Wire AI mode unlock to round state": [
@@ -326,6 +346,16 @@
         "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
         "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
         "timestamp": 1784206189282
+      },
+      {
+        "executionId": "5246e998-153e-42ba-9ec1-250a06cfbc29",
+        "chatSessionId": "sess_93c12c82-54b1-48ba-a808-5e5439c062d0",
+        "timestamp": 1784211915676
+      },
+      {
+        "executionId": "5246e998-153e-42ba-9ec1-250a06cfbc29",
+        "chatSessionId": "sess_93c12c82-54b1-48ba-a808-5e5439c062d0",
+        "timestamp": 1784212562019
       }
     ],
     "6.1 Mobile responsiveness pass": [
@@ -395,6 +425,13 @@
         "executionId": "aa2b7ce6-0d16-4e67-bb32-22a8397d50d9",
         "chatSessionId": "sess_e0d2f600-a3dc-49bc-b631-150f5f80790e",
         "timestamp": 1784210440443
+      }
+    ],
+    "5. You vs. AI (ghost mode)": [
+      {
+        "executionId": "5246e998-153e-42ba-9ec1-250a06cfbc29",
+        "chatSessionId": "sess_93c12c82-54b1-48ba-a808-5e5439c062d0",
+        "timestamp": 1784212562065
       }
     ]
   }

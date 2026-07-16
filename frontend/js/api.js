@@ -85,6 +85,19 @@ export async function getScores(options = {}) {
 }
 
 /**
+ * Get ghost data for a specific level.
+ *
+ * @param {number} level - Level ID (1-4)
+ * @returns {Promise<object>} Ghost data with path, algorithm, budget, etc.
+ * @throws {Error} If ghost data cannot be fetched
+ */
+export async function getGhost(level) {
+  const response = await fetch(`${BASE_URL}/api/ghosts/${level}`);
+  if (!response.ok) throw new Error(`Failed to fetch ghost (${response.status})`);
+  return response.json();
+}
+
+/**
  * Get the current active round state.
  *
  * @returns {Promise<object|null>} Round object or null if no active round

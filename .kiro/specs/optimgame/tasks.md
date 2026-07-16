@@ -126,19 +126,19 @@ Build a web-based optimization game with 3 modes (Explore, Challenge, AI Ghost),
     - GET /api/ghosts/:level — serve ghost JSON files
     - _Requirements: 6.1_
 
-- [ ] 5. You vs. AI (ghost mode)
-  - [~] 5.1 Implement ghost replay engine (frontend/js/ghost.js)
+- [x] 5. You vs. AI (ghost mode)
+  - [x] 5.1 Implement ghost replay engine (frontend/js/ghost.js)
     - Load ghost JSON, replay positions on timer
     - Render lavender dot on visualisation (1D/2D)
     - Show ghost eval count and function value
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-  - [~] 5.2 Add comparison summary
+  - [x] 5.2 Add comparison summary
     - End-of-round display comparing player vs. ghost
     - "You: X in N evals. CMA-ES: Y in M evals."
     - _Requirements: 6.5_
 
-  - [~] 5.3 Wire AI mode unlock to round state
+  - [x] 5.3 Wire AI mode unlock to round state
     - AI mode button unlocked when presenter activates via round controls
     - _Requirements: 6.6, 9.5_
 

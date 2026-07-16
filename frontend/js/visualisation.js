@@ -298,6 +298,95 @@ export function createVisualisation(canvas) {
     ];
   }
 
+  /**
+   * Draw a ghost dot on the 1D plot at a given x position (lavender).
+   * Must be called AFTER draw1D so it overlays on the existing landscape.
+   * @param {number} ghostX - Ghost's current x value
+   * @param {number[]} range - [min, max] range (same as draw1D)
+   */
+  function drawGhostDot1D(ghostX, range) {
+    const [min, max] = range;
+    const w = canvas.width / dpr;
+    const h = canvas.height / dpr;
+    const padding = { top: 20, right: 20, bottom: 30, left: 40 };
+    const plotW = w - padding.left - padding.right;
+    const plotH = h - padding.top - padding.bottom;
+
+    // Compute y-axis max (same logic as draw1D)
+    const steps = Math.min(200, Math.floor(plotW));
+    const xs = linspace(min, max, steps);
+    const ys = xs.map((x) => griewank1D(x));
+    const yMax = Math.max(...ys, 1);
+
+    function toPixelX(x) {
+      return padding.left + ((x - min) / (max - min)) * plotW;
+    }
+    function toPixelY(y) {
+      return padding.top + plotH - (y / yMax) * plotH;
+    }
+
+    const ghostVal = griewank1D(ghostX);
+    const gpx = toPixelX(ghostX);
+    const gpy = toPixelY(ghostVal);
+
+    // Vertical line from x-axis to point (lavender, faded)
+    ctx.strokeStyle = COLORS.lavender;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.4;
+    ctx.beginPath();
+    ctx.moveTo(gpx, padding.top + plotH);
+    ctx.lineTo(gpx, gpy);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Ghost dot
+    ctx.fillStyle = COLORS.lavender;
+    ctx.beginPath();
+    ctx.arc(gpx, gpy, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Dot border
+    ctx.strokeStyle = COLORS.base;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  /**
+   * Draw a ghost dot on the 2D heatmap at a given (x1, x2) position (lavender).
+   * Must be called AFTER draw2D so it overlays on the existing heatmap.
+   * @param {number} x1 - Ghost's x₁ value
+   * @param {number} x2 - Ghost's x₂ value
+   * @param {number[]} range - [min, max] range (same as draw2D)
+   */
+  function drawGhostDot2D(x1, x2, range) {
+    const [min, max] = range;
+    const w = canvas.width / dpr;
+    const h = canvas.height / dpr;
+    const padding = { top: 10, right: 10, bottom: 25, left: 25 };
+    const plotW = w - padding.left - padding.right;
+    const plotH = h - padding.top - padding.bottom;
+
+    const gpx = padding.left + ((x1 - min) / (max - min)) * plotW;
+    const gpy = padding.top + plotH - ((x2 - min) / (max - min)) * plotH;
+
+    // Ghost dot
+    ctx.fillStyle = COLORS.lavender;
+    ctx.beginPath();
+    ctx.arc(gpx, gpy, 7, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Dot border
+    ctx.strokeStyle = COLORS.base;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Inner dot
+    ctx.fillStyle = COLORS.base;
+    ctx.beginPath();
+    ctx.arc(gpx, gpy, 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   // Initial resize
   resize();
 
@@ -306,5 +395,5 @@ export function createVisualisation(canvas) {
     resize();
   });
 
-  return { draw1D, draw2D, clear, resize };
+  return { draw1D, draw2D, drawGhostDot1D, drawGhostDot2D, clear, resize };
 }
