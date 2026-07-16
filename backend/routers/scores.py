@@ -49,20 +49,22 @@ async def submit_score(
     )
     conn.commit()
 
-    # Compute rank: count of scores with strictly lower value + 1
-    # Rank is within the same round and level
+    # Compute rank: higher level beats lower level; within same level, lower score wins
+    # Count scores that are strictly better: either higher level, or same level with lower score
     rank_row = conn.execute(
         """SELECT COUNT(*) as better FROM scores
-           WHERE round_id = ? AND level = ? AND score < ?""",
-        (submission.round_id, submission.level, submission.score),
+           WHERE round_id = ? AND (
+             level > ? OR (level = ? AND score < ?)
+           )""",
+        (submission.round_id, submission.level, submission.level, submission.score),
     ).fetchone()
     rank = rank_row["better"] + 1
 
-    # Total players in same round and level
+    # Total players in same round (overall, not per-level)
     total_row = conn.execute(
         """SELECT COUNT(*) as total FROM scores
-           WHERE round_id = ? AND level = ?""",
-        (submission.round_id, submission.level),
+           WHERE round_id = ?""",
+        (submission.round_id,),
     ).fetchone()
     total_players = total_row["total"]
 
@@ -97,8 +99,9 @@ def get_scores(
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
 
-    # Lower score is better — sort ascending
-    query += " ORDER BY score ASC LIMIT ? OFFSET ?"
+    # Lower score is better, but higher level is better
+    # Sort by level DESC first (reward harder levels), then score ASC within same level
+    query += " ORDER BY level DESC, score ASC LIMIT ? OFFSET ?"
     params.extend([limit, offset])
 
     rows = conn.execute(query, params).fetchall()

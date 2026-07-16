@@ -24,7 +24,7 @@ def _get_leaderboard_data() -> list[dict]:
     try:
         rows = conn.execute(
             """SELECT id, nickname, level, score, evals_used, submitted_at
-               FROM scores ORDER BY score ASC LIMIT 50"""
+               FROM scores ORDER BY level DESC, score ASC LIMIT 50"""
         ).fetchall()
         return [
             ScoreEntry(
