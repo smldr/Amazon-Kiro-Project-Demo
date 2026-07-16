@@ -109,20 +109,20 @@ Build a web-based optimization game with 3 modes (Explore, Challenge, AI Ghost),
     - test_griewank.py: cross-validate JS and Python implementations
     - _Requirements: 1.5_
 
-- [ ] 4. ML notebook + ghost data
-  - [~] 4.1 Create solve_griewank.ipynb
+- [x] 4. ML notebook + ghost data
+  - [x] 4.1 Create solve_griewank.ipynb
     - Implement Griewank function in Python (matching JS exactly)
     - Run optimizers: random search, gradient descent, CMA-ES, differential evolution
     - Visualise solver paths on the Griewank landscape
     - Compare solver performance across dimensions
     - _Requirements: 1.5_
 
-  - [~] 4.2 Create export_ghost.py
+  - [x] 4.2 Create export_ghost.py
     - Convert optimizer traces to ghost JSON format per architecture spec
     - Generate level1.json through level4.json
     - _Requirements: 6.1_
 
-  - [~] 4.3 Implement ghost API endpoint
+  - [x] 4.3 Implement ghost API endpoint
     - GET /api/ghosts/:level — serve ghost JSON files
     - _Requirements: 6.1_
 

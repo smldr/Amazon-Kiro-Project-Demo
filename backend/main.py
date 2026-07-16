@@ -10,6 +10,7 @@ from database import init_db
 from routers.scores import router as scores_router
 from routers.rounds import router as rounds_router
 from routers.websocket import router as websocket_router
+from routers.ghosts import router as ghosts_router
 
 app = FastAPI(title="OptimGame API", version="0.1.0")
 
@@ -39,6 +40,7 @@ def health():
 app.include_router(scores_router)
 app.include_router(rounds_router)
 app.include_router(websocket_router)
+app.include_router(ghosts_router)
 
 
 # Mount static files from the frontend directory (must be last)

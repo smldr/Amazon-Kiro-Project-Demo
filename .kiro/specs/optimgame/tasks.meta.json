@@ -236,6 +236,16 @@
         "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
         "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
         "timestamp": 1784206189097
+      },
+      {
+        "executionId": "aa2b7ce6-0d16-4e67-bb32-22a8397d50d9",
+        "chatSessionId": "sess_e0d2f600-a3dc-49bc-b631-150f5f80790e",
+        "timestamp": 1784209666070
+      },
+      {
+        "executionId": "aa2b7ce6-0d16-4e67-bb32-22a8397d50d9",
+        "chatSessionId": "sess_e0d2f600-a3dc-49bc-b631-150f5f80790e",
+        "timestamp": 1784210438790
       }
     ],
     "4.2 Create export_ghost.py": [
@@ -248,6 +258,16 @@
         "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
         "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
         "timestamp": 1784206189130
+      },
+      {
+        "executionId": "aa2b7ce6-0d16-4e67-bb32-22a8397d50d9",
+        "chatSessionId": "sess_e0d2f600-a3dc-49bc-b631-150f5f80790e",
+        "timestamp": 1784209666846
+      },
+      {
+        "executionId": "aa2b7ce6-0d16-4e67-bb32-22a8397d50d9",
+        "chatSessionId": "sess_e0d2f600-a3dc-49bc-b631-150f5f80790e",
+        "timestamp": 1784210439632
       }
     ],
     "4.3 Implement ghost API endpoint": [
@@ -260,6 +280,16 @@
         "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
         "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
         "timestamp": 1784206189164
+      },
+      {
+        "executionId": "aa2b7ce6-0d16-4e67-bb32-22a8397d50d9",
+        "chatSessionId": "sess_e0d2f600-a3dc-49bc-b631-150f5f80790e",
+        "timestamp": 1784209667732
+      },
+      {
+        "executionId": "aa2b7ce6-0d16-4e67-bb32-22a8397d50d9",
+        "chatSessionId": "sess_e0d2f600-a3dc-49bc-b631-150f5f80790e",
+        "timestamp": 1784210440390
       }
     ],
     "5.1 Implement ghost replay engine (frontend/js/ghost.js)": [
@@ -358,6 +388,13 @@
         "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
         "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
         "timestamp": 1784208823708
+      }
+    ],
+    "4. ML notebook + ghost data": [
+      {
+        "executionId": "aa2b7ce6-0d16-4e67-bb32-22a8397d50d9",
+        "chatSessionId": "sess_e0d2f600-a3dc-49bc-b631-150f5f80790e",
+        "timestamp": 1784210440443
       }
     ]
   }
