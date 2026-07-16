@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1e1e2e">
+  <title>OptimGame — Leaderboard</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ========================================================
+       Leaderboard — Projector-Optimised (1080p full-screen)
+       ======================================================== */
+
+    body {
+      overflow: hidden;
+    }
+
+    .leaderboard-page {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      padding: var(--space-lg);
+      gap: var(--space-md);
+    }
+
+    /* Header */
+    .leaderboard-header {
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .leaderboard-header h1 {
+      font-size: 2rem;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    /* Table Container */
+    .leaderboard-table-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--surface1);
+      background: var(--bg-surface);
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1.2rem;
+    }
+
+    .leaderboard-table thead {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--bg-elevated);
+    }
+
+    .leaderboard-table th {
+      padding: var(--space-md) var(--space-lg);
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--surface1);
+    }
+
+    .leaderboard-table td {
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 1px solid var(--surface0);
+      vertical-align: middle;
+    }
+
+    .leaderboard-table th:first-child,
+    .leaderboard-table td:first-child {
+      text-align: center;
+      width: 60px;
+    }
+
+    .leaderboard-table .col-score,
+    .leaderboard-table .col-evals {
+      font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", "Courier New", monospace;
+      text-align: right;
+    }
+
+    .leaderboard-table .col-level {
+      text-align: center;
+      width: 80px;
+    }
+
+    /* Rank badges */
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .rank-badge--gold {
+      background: var(--yellow);
+      color: var(--crust);
+    }
+
+    .rank-badge--silver {
+      background: var(--lavender);
+      color: var(--crust);
+    }
+
+    .rank-badge--bronze {
+      background: var(--peach);
+      color: var(--crust);
+    }
+
+    /* Row highlights for top 3 */
+    .row-gold {
+      background: rgba(249, 226, 175, 0.08);
+    }
+
+    .row-silver {
+      background: rgba(180, 190, 254, 0.06);
+    }
+
+    .row-bronze {
+      background: rgba(250, 179, 135, 0.06);
+    }
+
+    /* Slide-in animation for new entries */
+    @keyframes slide-in {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .row-new {
+      animation: slide-in 300ms ease-out;
+    }
+
+    /* Empty state */
+    .leaderboard-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    /* Footer */
+    .leaderboard-footer {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-sm) 0;
+    }
+
+    .leaderboard-status {
+      display: flex;
+      gap: var(--space-lg);
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .leaderboard-status__item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .leaderboard-status__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-success);
+    }
+
+    .leaderboard-status__dot--disconnected {
+      background: var(--color-danger);
+    }
+
+    /* Presenter Controls */
+    .presenter-controls {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    .pin-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 17, 27, 0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: var(--space-md);
+    }
+
+    .pin-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      width: 280px;
+    }
+
+    /* Connection indicator */
+    .connection-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Responsive: smaller screens */
+    @media (max-width: 768px) {
+      .leaderboard-page {
+        padding: var(--space-md);
+      }
+
+      .leaderboard-table {
+        font-size: 0.95rem;
+      }
+
+      .leaderboard-table th,
+      .leaderboard-table td {
+        padding: var(--space-sm) var(--space-md);
+      }
+
+      .leaderboard-header h1 {
+        font-size: 1.4rem;
+      }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .row-new {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="leaderboard-page">
+
+    <!-- Header -->
+    <header class="leaderboard-header">
+      <h1>OptimGame — Leaderboard</h1>
+    </header>
+
+    <!-- Table -->
+    <div class="leaderboard-table-wrapper" id="table-wrapper">
+      <table class="leaderboard-table" aria-label="Live leaderboard">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Player</th>
+            <th scope="col" class="col-level">Level</th>
+            <th scope="col" class="col-score">Score</th>
+            <th scope="col" class="col-evals">Evals</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+        </tbody>
+      </table>
+      <div class="leaderboard-empty" id="empty-state">Waiting for scores...</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="leaderboard-footer">
+      <div class="leaderboard-status">
+        <div class="leaderboard-status__item">
+          <span class="leaderboard-status__dot" id="ws-dot"></span>
+          <span class="connection-label" id="ws-label">Connected</span>
+        </div>
+        <div class="leaderboard-status__item">
+          <span id="player-count">Players: 0</span>
+        </div>
+        <div class="leaderboard-status__item">
+          <span id="round-info">Round: —</span>
+        </div>
+      </div>
+
+      <div class="presenter-controls">
+        <button class="btn btn--ghost" id="controls-btn" style="font-size: 0.8rem;">
+          Presenter
+        </button>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- PIN Overlay (hidden by default) -->
+  <div class="pin-overlay" id="pin-overlay" style="display: none;">
+    <div class="card" style="max-width: 320px; width: 100%;">
+      <h2 style="margin-bottom: var(--space-md); text-align: center;">Presenter PIN</h2>
+      <div class="pin-form">
+        <input
+          type="password"
+          class="input"
+          id="pin-input"
+          placeholder="Enter PIN"
+          maxlength="10"
+          autocomplete="off"
+          aria-label="Presenter PIN"
+        >
+        <div style="display: flex; gap: var(--space-sm);">
+          <button class="btn btn--primary" id="pin-confirm" style="flex: 1;">Unlock</button>
+          <button class="btn btn--ghost" id="pin-cancel" style="flex: 1;">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Presenter Panel (hidden until PIN verified) -->
+  <div id="presenter-panel" style="display: none; position: fixed; bottom: var(--space-lg); right: var(--space-lg); z-index: 100;">
+    <div class="card" style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+      <button class="btn btn--primary" id="start-round-btn">Start Round</button>
+      <button class="btn btn--secondary" id="reset-btn">Reset</button>
+      <button class="btn btn--ghost" id="lock-btn" style="font-size: 0.75rem;">Lock</button>
+    </div>
+  </div>
+
+  <script type="module">
+    // ============================================================
+    // Leaderboard — Real-time WebSocket with polling fallback
+    // ============================================================
+
+    const tbody = document.getElementById("leaderboard-body");
+    const emptyState = document.getElementById("empty-state");
+    const playerCountEl = document.getElementById("player-count");
+    const roundInfoEl = document.getElementById("round-info");
+    const wsDot = document.getElementById("ws-dot");
+    const wsLabel = document.getElementById("ws-label");
+    const tableWrapper = document.getElementById("table-wrapper");
+
+    // Presenter controls
+    const controlsBtn = document.getElementById("controls-btn");
+    const pinOverlay = document.getElementById("pin-overlay");
+    const pinInput = document.getElementById("pin-input");
+    const pinConfirm = document.getElementById("pin-confirm");
+    const pinCancel = document.getElementById("pin-cancel");
+    const presenterPanel = document.getElementById("presenter-panel");
+    const startRoundBtn = document.getElementById("start-round-btn");
+    const resetBtn = document.getElementById("reset-btn");
+    const lockBtn = document.getElementById("lock-btn");
+
+    // State
+    let ws = null;
+    let currentEntries = [];
+    let knownIds = new Set();
+    let presenterPin = null;
+    let currentRoundId = null;
+    let pollInterval = null;
+    let reconnectTimeout = null;
+    let reconnectDelay = 1000;
+    const MAX_RECONNECT_DELAY = 10000;
+
+    // ============================================================
+    // Rendering
+    // ============================================================
+
+    function renderLeaderboard(entries) {
+      const previousIds = knownIds;
+      const newIds = new Set(entries.map((e) => e.id));
+
+      tbody.innerHTML = "";
+
+      if (entries.length === 0) {
+        emptyState.style.display = "flex";
+        return;
+      }
+      emptyState.style.display = "none";
+
+      entries.forEach((entry, index) => {
+        const rank = index + 1;
+        const tr = document.createElement("tr");
+
+        // Highlight top 3
+        if (rank === 1) tr.classList.add("row-gold");
+        else if (rank === 2) tr.classList.add("row-silver");
+        else if (rank === 3) tr.classList.add("row-bronze");
+
+        // Animate new entries
+        if (!previousIds.has(entry.id)) {
+          tr.classList.add("row-new");
+        }
+
+        // Rank cell
+        const rankTd = document.createElement("td");
+        if (rank <= 3) {
+          const badge = document.createElement("span");
+          badge.className = `rank-badge rank-badge--${
+            rank === 1 ? "gold" : rank === 2 ? "silver" : "bronze"
+          }`;
+          badge.textContent = rank;
+          badge.setAttribute("aria-label", `Rank ${rank}`);
+          rankTd.appendChild(badge);
+        } else {
+          rankTd.textContent = rank;
+        }
+        tr.appendChild(rankTd);
+
+        // Player
+        const playerTd = document.createElement("td");
+        playerTd.textContent = entry.nickname;
+        tr.appendChild(playerTd);
+
+        // Level
+        const levelTd = document.createElement("td");
+        levelTd.className = "col-level";
+        levelTd.textContent = entry.level;
+        tr.appendChild(levelTd);
+
+        // Score
+        const scoreTd = document.createElement("td");
+        scoreTd.className = "col-score";
+        scoreTd.textContent = formatScore(entry.score);
+        tr.appendChild(scoreTd);
+
+        // Evals
+        const evalsTd = document.createElement("td");
+        evalsTd.className = "col-evals";
+        evalsTd.textContent = entry.evals_used;
+        tr.appendChild(evalsTd);
+
+        tbody.appendChild(tr);
+      });
+
+      knownIds = newIds;
+      currentEntries = entries;
+    }
+
+    function formatScore(score) {
+      if (score < 0.0001) return score.toExponential(2);
+      if (score < 1) return score.toFixed(4);
+      return score.toFixed(2);
+    }
+
+    // ============================================================
+    // WebSocket Connection
+    // ============================================================
+
+    function getWsUrl() {
+      const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
+      return `${proto}//${window.location.host}/ws/leaderboard`;
+    }
+
+    function connectWebSocket() {
+      try {
+        ws = new WebSocket(getWsUrl());
+
+        ws.addEventListener("open", () => {
+          setConnectionStatus(true);
+          reconnectDelay = 1000;
+          stopPolling();
+        });
+
+        ws.addEventListener("message", (event) => {
+          try {
+            const msg = JSON.parse(event.data);
+            handleMessage(msg);
+          } catch (e) {
+            console.error("Failed to parse WebSocket message:", e);
+          }
+        });
+
+        ws.addEventListener("close", () => {
+          setConnectionStatus(false);
+          scheduleReconnect();
+          startPolling();
+        });
+
+        ws.addEventListener("error", () => {
+          setConnectionStatus(false);
+          ws.close();
+        });
+      } catch (e) {
+        console.error("WebSocket connection failed:", e);
+        setConnectionStatus(false);
+        startPolling();
+      }
+    }
+
+    function handleMessage(msg) {
+      if (msg.type === "leaderboard_update") {
+        renderLeaderboard(msg.data || []);
+      } else if (msg.type === "player_count") {
+        playerCountEl.textContent = `Players: ${msg.count}`;
+      }
+    }
+
+    function setConnectionStatus(connected) {
+      if (connected) {
+        wsDot.classList.remove("leaderboard-status__dot--disconnected");
+        wsLabel.textContent = "Connected";
+      } else {
+        wsDot.classList.add("leaderboard-status__dot--disconnected");
+        wsLabel.textContent = "Reconnecting...";
+      }
+    }
+
+    function scheduleReconnect() {
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      reconnectTimeout = setTimeout(() => {
+        connectWebSocket();
+      }, reconnectDelay);
+      reconnectDelay = Math.min(reconnectDelay * 2, MAX_RECONNECT_DELAY);
+    }
+
+    // ============================================================
+    // Polling Fallback
+    // ============================================================
+
+    function startPolling() {
+      if (pollInterval) return;
+      pollInterval = setInterval(async () => {
+        try {
+          const res = await fetch("/api/scores");
+          if (res.ok) {
+            const data = await res.json();
+            renderLeaderboard(Array.isArray(data) ? data : []);
+          }
+        } catch (e) {
+          // Silently fail — will retry on next interval
+        }
+      }, 3000);
+    }
+
+    function stopPolling() {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+    }
+
+    // ============================================================
+    // Round Info
+    // ============================================================
+
+    async function fetchRoundInfo() {
+      try {
+        const res = await fetch("/api/rounds");
+        if (res.ok) {
+          const round = await res.json();
+          currentRoundId = round.id;
+          roundInfoEl.textContent = `Round active`;
+        } else {
+          roundInfoEl.textContent = "Round: —";
+        }
+      } catch (e) {
+        roundInfoEl.textContent = "Round: —";
+      }
+    }
+
+    // ============================================================
+    // Presenter Controls
+    // ============================================================
+
+    controlsBtn.addEventListener("click", () => {
+      if (presenterPin) {
+        presenterPanel.style.display = "block";
+      } else {
+        pinOverlay.style.display = "flex";
+        pinInput.value = "";
+        pinInput.focus();
+      }
+    });
+
+    pinCancel.addEventListener("click", () => {
+      pinOverlay.style.display = "none";
+    });
+
+    pinConfirm.addEventListener("click", () => {
+      const pin = pinInput.value.trim();
+      if (!pin) return;
+      presenterPin = pin;
+      pinOverlay.style.display = "none";
+      presenterPanel.style.display = "block";
+    });
+
+    pinInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") pinConfirm.click();
+      if (e.key === "Escape") pinCancel.click();
+    });
+
+    lockBtn.addEventListener("click", () => {
+      presenterPin = null;
+      presenterPanel.style.display = "none";
+    });
+
+    startRoundBtn.addEventListener("click", async () => {
+      if (!presenterPin) return;
+      try {
+        const res = await fetch("/api/rounds", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pin: presenterPin,
+            mode: "challenge",
+            levels_open: [1, 2, 3, 4],
+            ai_mode_unlocked: false,
+          }),
+        });
+        if (res.ok) {
+          const round = await res.json();
+          currentRoundId = round.id;
+          roundInfoEl.textContent = "Round active";
+        } else if (res.status === 403) {
+          alert("Invalid PIN");
+          presenterPin = null;
+          presenterPanel.style.display = "none";
+        }
+      } catch (e) {
+        console.error("Failed to start round:", e);
+      }
+    });
+
+    resetBtn.addEventListener("click", async () => {
+      if (!presenterPin || !currentRoundId) {
+        alert("No active round to reset");
+        return;
+      }
+      if (!confirm("Reset the leaderboard? This deletes all scores for the current round.")) {
+        return;
+      }
+      try {
+        const res = await fetch(
+          `/api/rounds/${currentRoundId}/reset?pin=${encodeURIComponent(presenterPin)}`,
+          { method: "POST" }
+        );
+        if (res.ok) {
+          renderLeaderboard([]);
+          knownIds.clear();
+        } else if (res.status === 403) {
+          alert("Invalid PIN");
+          presenterPin = null;
+          presenterPanel.style.display = "none";
+        }
+      } catch (e) {
+        console.error("Failed to reset leaderboard:", e);
+      }
+    });
+
+    // ============================================================
+    // Initialise
+    // ============================================================
+
+    fetchRoundInfo();
+    connectWebSocket();
+  </script>
+</body>
+</html>
