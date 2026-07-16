@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Run Tests on DB/API Change",
+      "trigger": "PostFileSave",
+      "description": "Runs the backend test suite whenever database.py, models.py, or any router file is saved",
+      "matcher": "(database|models|routers/).*\\.py$",
+      "action": {
+        "type": "command",
+        "command": "cd /Users/smk3/Documents/Teaching/Honours/Amazon-Kiro-Project-Demo/backend && python -m pytest tests/ -v"
+      }
+    }
+  ]
+}
