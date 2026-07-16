@@ -16,7 +16,7 @@ def get_connection() -> sqlite3.Connection:
 
 
 def init_db() -> None:
-    """Create tables if they don't exist."""
+    """Create tables if they don't exist, and ensure a default round is active."""
     conn = get_connection()
     try:
         conn.executescript("""
@@ -41,6 +41,23 @@ def init_db() -> None:
             );
         """)
         conn.commit()
+
+        # Ensure there's always an active round so scores can be submitted
+        active = conn.execute(
+            "SELECT id FROM rounds WHERE ended_at IS NULL LIMIT 1"
+        ).fetchone()
+        if active is None:
+            import uuid
+            from datetime import datetime, timezone
+            round_id = str(uuid.uuid4())
+            now = datetime.now(timezone.utc).isoformat()
+            conn.execute(
+                """INSERT INTO rounds (id, mode, levels_open, ai_mode_unlocked, started_at)
+                   VALUES (?, 'challenge', '[1,2,3,4]', 0, ?)""",
+                (round_id, now),
+            )
+            conn.commit()
+            print(f"[init_db] Created default round: {round_id}")
     finally:
         conn.close()
 
