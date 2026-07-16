@@ -85,9 +85,9 @@
     const canvas = document.getElementById("qr-canvas");
     const urlDisplay = document.getElementById("qr-url");
 
-    // Allow overriding via URL param: ?url=https://example.com
+    // Default to the Railway production URL; override with ?url= param
     const params = new URLSearchParams(window.location.search);
-    const targetUrl = params.get("url") || window.location.origin;
+    const targetUrl = params.get("url") || "https://web-production-b322e.up.railway.app";
 
     urlDisplay.textContent = targetUrl;
 
