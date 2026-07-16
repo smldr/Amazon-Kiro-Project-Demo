@@ -1,0 +1,364 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "2.1 Add evaluation budget tracking to game.js": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323254
+      },
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202353474
+      },
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784203109093
+      }
+    ],
+    "2.2 Add score submission UI": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323300
+      },
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202354397
+      },
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784203109945
+      }
+    ],
+    "2.3 Add level progression logic": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323356
+      },
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202355507
+      },
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784203110829
+      }
+    ],
+    "3.1 Create FastAPI app scaffold": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323397
+      },
+      {
+        "executionId": "d26086fb-1c91-4377-9e7c-39482680e79e",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784203514819
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206188797
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206232285
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208242170
+      }
+    ],
+    "3.2 Implement score endpoints": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323432
+      },
+      {
+        "executionId": "d26086fb-1c91-4377-9e7c-39482680e79e",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784203515654
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206188847
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206233339
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208242897
+      }
+    ],
+    "3.3 Implement round management endpoints": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323466
+      },
+      {
+        "executionId": "d26086fb-1c91-4377-9e7c-39482680e79e",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784203516516
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206188898
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206234000
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208243413
+      }
+    ],
+    "3.4 Implement WebSocket leaderboard": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323500
+      },
+      {
+        "executionId": "d26086fb-1c91-4377-9e7c-39482680e79e",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784203517504
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206188958
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206234647
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208244278
+      }
+    ],
+    "3.5 Create projector leaderboard page (frontend/leaderboard.html)": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323532
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206188996
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208251535
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208822260
+      }
+    ],
+    "3.6 Connect frontend api.js to backend": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323570
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189030
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208252377
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208822825
+      }
+    ],
+    "3.7 Write backend tests": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323606
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189064
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208253115
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208823660
+      }
+    ],
+    "4.1 Create solve_griewank.ipynb": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323647
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189097
+      }
+    ],
+    "4.2 Create export_ghost.py": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323685
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189130
+      }
+    ],
+    "4.3 Implement ghost API endpoint": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323716
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189164
+      }
+    ],
+    "5.1 Implement ghost replay engine (frontend/js/ghost.js)": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323750
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189198
+      }
+    ],
+    "5.2 Add comparison summary": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323811
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189233
+      }
+    ],
+    "5.3 Wire AI mode unlock to round state": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323845
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189282
+      }
+    ],
+    "6.1 Mobile responsiveness pass": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323884
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189316
+      }
+    ],
+    "6.2 Add QR code and presenter dashboard": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323916
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189349
+      }
+    ],
+    "6.3 Add loading states and error handling": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323951
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189398
+      }
+    ],
+    "6.4 Final testing and Lighthouse audit": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784202323982
+      },
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784206189447
+      }
+    ],
+    "2. Challenge mode (evaluation budget + scoring)": [
+      {
+        "executionId": "e644a499-c6ea-47a9-b9c6-156ad926a744",
+        "chatSessionId": "sess_2e3a193a-06aa-4967-af8f-b7fab3684880",
+        "timestamp": 1784203110881
+      }
+    ],
+    "3. Backend API + leaderboard": [
+      {
+        "executionId": "c51d5760-ad9b-4cbd-9881-01bdc314a310",
+        "chatSessionId": "sess_9e360fdd-27aa-4566-941e-0193ab21869f",
+        "timestamp": 1784208823708
+      }
+    ]
+  }
+}

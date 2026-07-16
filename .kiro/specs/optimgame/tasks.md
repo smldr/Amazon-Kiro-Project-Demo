@@ -52,113 +52,113 @@ Build a web-based optimization game with 3 modes (Explore, Challenge, AI Ghost),
     - Footer with back button and mode/nickname label
     - _Requirements: 2.4, 3.4, 4.4_
 
-- [ ] 2. Challenge mode (evaluation budget + scoring)
-  - [ ] 2.1 Add evaluation budget tracking to game.js
+- [x] 2. Challenge mode (evaluation budget + scoring)
+  - [x] 2.1 Add evaluation budget tracking to game.js
     - Decrement budget on slider `change` event (release, not drag)
     - Display remaining budget with colour coding
     - Hide budget display in Explore mode
     - _Requirements: 5.1, 5.2, 5.3_
 
-  - [ ] 2.2 Add score submission UI
+  - [x] 2.2 Add score submission UI
     - "Submit Score" button appears when budget exhausted or player chooses
     - Record player path as array of position snapshots
     - Store score locally (localStorage) as backup
     - _Requirements: 5.4, 5.5, 5.7_
 
-  - [ ] 2.3 Add level progression logic
+  - [x] 2.3 Add level progression logic
     - Complete a level (submit score) to unlock the next
     - Track unlocked levels in localStorage
     - _Requirements: 5.1_
 
-- [ ] 3. Backend API + leaderboard
-  - [ ] 3.1 Create FastAPI app scaffold
+- [x] 3. Backend API + leaderboard
+  - [x] 3.1 Create FastAPI app scaffold
     - main.py with CORS, static file serving from frontend/
     - database.py with SQLite setup and connection
     - models.py with Pydantic schemas
     - _Requirements: 7.1, 11.4_
 
-  - [ ] 3.2 Implement score endpoints
+  - [x] 3.2 Implement score endpoints
     - POST /api/scores — validate, store, return rank
     - GET /api/scores — sorted leaderboard with pagination
     - _Requirements: 7.1, 7.2_
 
-  - [ ] 3.3 Implement round management endpoints
+  - [x] 3.3 Implement round management endpoints
     - GET /api/rounds — current round state
     - POST /api/rounds — create/advance (PIN-protected)
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-  - [ ] 3.4 Implement WebSocket leaderboard
+  - [x] 3.4 Implement WebSocket leaderboard
     - /ws/leaderboard — broadcast score updates to connected clients
     - Fallback: frontend polls GET /api/scores every 3s if WS fails
     - _Requirements: 7.4, 7.5, 7.7, 11.5_
 
-  - [ ] 3.5 Create projector leaderboard page (frontend/leaderboard.html)
+  - [x] 3.5 Create projector leaderboard page (frontend/leaderboard.html)
     - Full-screen table with rank, nickname, level, score, evals
     - Real-time updates via WebSocket
     - Top 3 highlighted, new entries animate in
     - _Requirements: 7.3, 7.5, 7.6, 7.7_
 
-  - [ ] 3.6 Connect frontend api.js to backend
+  - [x] 3.6 Connect frontend api.js to backend
     - submitScore(), getScores(), getRound() implementations
     - WebSocket connection with auto-reconnect
     - _Requirements: 7.4, 11.4, 11.5_
 
-  - [ ] 3.7 Write backend tests
+  - [x] 3.7 Write backend tests
     - test_scores.py: POST/GET score validation and ranking
     - test_rounds.py: round creation, PIN enforcement
     - test_griewank.py: cross-validate JS and Python implementations
     - _Requirements: 1.5_
 
 - [ ] 4. ML notebook + ghost data
-  - [ ] 4.1 Create solve_griewank.ipynb
+  - [~] 4.1 Create solve_griewank.ipynb
     - Implement Griewank function in Python (matching JS exactly)
     - Run optimizers: random search, gradient descent, CMA-ES, differential evolution
     - Visualise solver paths on the Griewank landscape
     - Compare solver performance across dimensions
     - _Requirements: 1.5_
 
-  - [ ] 4.2 Create export_ghost.py
+  - [~] 4.2 Create export_ghost.py
     - Convert optimizer traces to ghost JSON format per architecture spec
     - Generate level1.json through level4.json
     - _Requirements: 6.1_
 
-  - [ ] 4.3 Implement ghost API endpoint
+  - [~] 4.3 Implement ghost API endpoint
     - GET /api/ghosts/:level — serve ghost JSON files
     - _Requirements: 6.1_
 
 - [ ] 5. You vs. AI (ghost mode)
-  - [ ] 5.1 Implement ghost replay engine (frontend/js/ghost.js)
+  - [~] 5.1 Implement ghost replay engine (frontend/js/ghost.js)
     - Load ghost JSON, replay positions on timer
     - Render lavender dot on visualisation (1D/2D)
     - Show ghost eval count and function value
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-  - [ ] 5.2 Add comparison summary
+  - [~] 5.2 Add comparison summary
     - End-of-round display comparing player vs. ghost
     - "You: X in N evals. CMA-ES: Y in M evals."
     - _Requirements: 6.5_
 
-  - [ ] 5.3 Wire AI mode unlock to round state
+  - [~] 5.3 Wire AI mode unlock to round state
     - AI mode button unlocked when presenter activates via round controls
     - _Requirements: 6.6, 9.5_
 
 - [ ] 6. Polish + deployment prep
-  - [ ] 6.1 Mobile responsiveness pass
+  - [~] 6.1 Mobile responsiveness pass
     - Test on real devices (iOS Safari, Android Chrome)
     - Verify touch targets, slider usability
     - _Requirements: 10.2, 10.3_
 
-  - [ ] 6.2 Add QR code and presenter dashboard
+  - [~] 6.2 Add QR code and presenter dashboard
     - QR code page for slides
     - Presenter controls on leaderboard page (start round, unlock AI, reset)
     - _Requirements: 8.1, 8.4_
 
-  - [ ] 6.3 Add loading states and error handling
+  - [~] 6.3 Add loading states and error handling
     - Offline detection, reconnection indicators
     - Score submission retry logic
     - _Requirements: 11.5_
 
-  - [ ] 6.4 Final testing and Lighthouse audit
+  - [~] 6.4 Final testing and Lighthouse audit
     - Lighthouse mobile score > 90
     - All backend tests pass
     - Cross-browser verification

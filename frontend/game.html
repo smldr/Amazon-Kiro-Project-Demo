@@ -53,6 +53,17 @@
         height: 350px;
       }
     }
+
+    .score-result-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 17, 27, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: var(--space-md);
+    }
   </style>
 </head>
 <body>
@@ -91,6 +102,24 @@
       </section>
     </div>
 
+    <!-- Submit Score Button (hidden in explore mode) -->
+    <div class="submit-section" id="submit-section" style="display: none; text-align: center;">
+      <button class="btn btn--primary" id="submit-score-btn" style="min-width: 180px;">
+        Submit Score
+      </button>
+    </div>
+
+    <!-- Score Result Overlay -->
+    <div class="score-result-overlay" id="score-result-overlay" style="display: none;">
+      <div class="card" style="text-align: center; max-width: 400px; margin: 0 auto; padding: var(--space-xl);">
+        <h2 style="margin-bottom: var(--space-sm); color: var(--accent-primary);">Score Submitted!</h2>
+        <div class="fn-value" id="final-score-display" style="margin-bottom: var(--space-md);">f(x) = 0.0000</div>
+        <p class="text-secondary" id="rank-display" style="display: none; margin-bottom: var(--space-sm); color: var(--accent-secondary);"></p>
+        <p class="text-secondary" id="evals-used-display" style="margin-bottom: var(--space-lg);"></p>
+        <a href="index.html" class="btn btn--primary btn--full">Back to Menu</a>
+      </div>
+    </div>
+
     <!-- Footer -->
     <footer class="game-footer">
       <a href="index.html" class="btn btn--ghost" style="font-size: 0.8rem;">← Back</a>
@@ -112,6 +141,12 @@
       budgetLabel: document.getElementById("budget-label"),
       visContainer: document.getElementById("vis-container"),
       levelSelector: document.getElementById("level-selector"),
+      submitSection: document.getElementById("submit-section"),
+      submitBtn: document.getElementById("submit-score-btn"),
+      scoreResultOverlay: document.getElementById("score-result-overlay"),
+      finalScoreDisplay: document.getElementById("final-score-display"),
+      rankDisplay: document.getElementById("rank-display"),
+      evalsUsedDisplay: document.getElementById("evals-used-display"),
     };
 
     // Initialise game

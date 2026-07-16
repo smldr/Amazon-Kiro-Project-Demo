@@ -14,10 +14,11 @@
  * @param {number} levelConfig.dimensions - Number of sliders to create
  * @param {number} levelConfig.range[0] - Minimum slider value
  * @param {number} levelConfig.range[1] - Maximum slider value
- * @param {function} onChange - Callback fired when any slider value changes. Receives array of all current values.
+ * @param {function} onChange - Callback fired on every slider input (during drag). Receives array of all current values.
+ * @param {function} [onRelease] - Callback fired on slider release (change event). Receives array of all current values. Used for budget tracking.
  * @returns {object} Slider controller with methods: getValues(), setValues(), destroy()
  */
-export function createSliders(container, levelConfig, onChange) {
+export function createSliders(container, levelConfig, onChange, onRelease) {
   const { dimensions, range } = levelConfig;
   const [min, max] = range;
   const step = 0.01;
@@ -59,10 +60,17 @@ export function createSliders(container, levelConfig, onChange) {
     sliders.push(input);
     valueDisplays.push(valueSpan);
 
-    // Event listeners — update on input (real-time) for explore mode
+    // Event listeners — update on input (real-time) for visualisation
     input.addEventListener("input", () => {
       valueSpan.textContent = formatValue(input.value);
       onChange(getValues());
+    });
+
+    // Change event fires once on slider release — used for budget tracking
+    input.addEventListener("change", () => {
+      if (onRelease) {
+        onRelease(getValues());
+      }
     });
   }
 
