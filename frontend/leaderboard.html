@@ -27,7 +27,9 @@
 
     /* Header */
     .leaderboard-header {
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       flex-shrink: 0;
     }
 
@@ -291,9 +293,10 @@
   <main class="leaderboard-page">
 
     <!-- Header -->
-    <header class="leaderboard-header" style="display: flex; align-items: center; justify-content: center; position: relative;">
-      <a href="index.html" class="btn btn--ghost" style="position: absolute; left: 0;">← Home</a>
+    <header class="leaderboard-header">
+      <a href="index.html" class="btn btn--ghost" style="font-size: 0.8rem;">← Home</a>
       <h1>OptimGame — Leaderboard</h1>
+      <div style="min-width: 70px;"></div>
     </header>
 
     <!-- Table -->

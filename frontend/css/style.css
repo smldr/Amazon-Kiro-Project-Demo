@@ -462,11 +462,16 @@ h2 {
   justify-content: space-between;
   align-items: center;
   padding: var(--space-sm) 0;
+  gap: var(--space-sm);
 }
 
 .game-header__level {
   font-weight: 600;
   color: var(--text-primary);
+  font-size: 0.85rem;
+  text-align: center;
+  flex: 1;
+  min-width: 0;
 }
 
 .game-header__budget {
