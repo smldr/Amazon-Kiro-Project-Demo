@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#1e1e2e">
   <title>OptimGame — Playing</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -12,11 +12,13 @@
       max-width: 700px;
       margin: 0 auto;
       padding: var(--space-md);
+      padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
       gap: var(--space-md);
+      overflow-x: hidden;
     }
 
     .fn-display {
@@ -27,6 +29,7 @@
     .vis-canvas {
       width: 100%;
       height: 250px;
+      max-width: 100%;
     }
 
     .game-footer {
@@ -35,6 +38,12 @@
       align-items: center;
       padding: var(--space-sm) 0;
       margin-top: auto;
+      gap: var(--space-sm);
+    }
+
+    .game-footer .btn {
+      min-height: 44px;
+      min-width: 44px;
     }
 
     @media (min-width: 768px) {
@@ -54,6 +63,36 @@
       }
     }
 
+    /* Mobile: stack game content, reduce padding */
+    @media (max-width: 767px) {
+      .game-page {
+        padding: var(--space-sm) var(--space-md);
+        padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom, 0px));
+      }
+
+      .game-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+      }
+
+      .vis-canvas {
+        height: 220px;
+      }
+    }
+
+    /* Small screens: reduce canvas height to prevent scroll */
+    @media (max-width: 374px) {
+      .game-page {
+        padding: var(--space-sm);
+        gap: var(--space-sm);
+      }
+
+      .vis-canvas {
+        height: 180px;
+      }
+    }
+
     .score-result-overlay {
       position: fixed;
       inset: 0;
@@ -63,6 +102,20 @@
       justify-content: center;
       z-index: 100;
       padding: var(--space-md);
+      overflow-y: auto;
+    }
+
+    /* Score overlay: ensure it's scrollable on short mobile screens */
+    @media (max-width: 767px) {
+      .score-result-overlay {
+        align-items: flex-start;
+        padding-top: var(--space-xl);
+      }
+
+      .score-result-overlay .card {
+        margin: 0 auto;
+        max-width: 100%;
+      }
     }
   </style>
 </head>
@@ -142,7 +195,7 @@
 
     <!-- Footer -->
     <footer class="game-footer">
-      <a href="index.html" class="btn btn--ghost" style="font-size: 0.8rem;">← Back</a>
+      <a href="index.html" class="btn btn--ghost">← Back</a>
       <span class="text-muted mono" style="font-size: 0.75rem;" id="mode-label"></span>
     </footer>
 

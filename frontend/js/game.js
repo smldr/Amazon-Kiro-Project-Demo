@@ -1,24 +1,9 @@
-/**
- * Game state machine — level config, mode management, orchestration.
- *
- * This is the central coordinator. It manages:
- * - Level configuration (dimensions, ranges, budgets)
- * - Game modes (explore, challenge, ai)
- * - Function value display and colour coding
- * - Communication between sliders, visualisation, and scoring
- *
- * @module game
- */
-
 import { griewank } from "./griewank.js";
 import { createSliders } from "./sliders.js";
 import { createVisualisation } from "./visualisation.js";
 import { submitScore as postScore, getRound, getGhost } from "./api.js";
 import { createGhostPlayer } from "./ghost.js";
-
-// ============================================================
-// Level Configuration
-// ============================================================
+import { initConnectionStatus } from "./connection-status.js";
 
 export const LEVELS = [
   {
@@ -55,28 +40,14 @@ export const LEVELS = [
   },
 ];
 
-// ============================================================
-// Game Modes
-// ============================================================
-
 export const MODES = {
   EXPLORE: "explore",
   CHALLENGE: "challenge",
   AI: "ai",
 };
 
-// ============================================================
-// Level Progression (localStorage-backed)
-// ============================================================
-
 const STORAGE_KEY = "optimgame_unlocked_levels";
 
-/**
- * Get the list of unlocked level IDs from localStorage.
- * Level 1 is always unlocked by default.
- *
- * @returns {number[]} Array of unlocked level IDs, e.g. [1, 2]
- */
 export function getUnlockedLevels() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -98,10 +69,6 @@ export function getUnlockedLevels() {
 
 /**
  * Unlock the next level after the given current level.
- * Persists to localStorage so unlocks survive page reloads.
- *
- * @param {number} currentLevel - The level just completed
- * @returns {number[]} Updated array of unlocked levels
  */
 export function unlockNextLevel(currentLevel) {
   const unlocked = getUnlockedLevels();
@@ -122,32 +89,16 @@ export function unlockNextLevel(currentLevel) {
   return unlocked;
 }
 
-// ============================================================
 // Game State
-// ============================================================
 
-/**
- * Initialise the game on the game page.
- * Reads mode and level from URL params, sets up sliders and visualisation.
- *
- * Expected URL params:
- *   ?mode=explore&level=1&nickname=alice
- *
- * @param {object} elements - DOM element references
- * @param {HTMLElement} elements.sliderContainer - Where to render sliders
- * @param {HTMLCanvasElement} elements.canvas - Visualisation canvas
- * @param {HTMLElement} elements.fnValue - Element to display f(x) value
- * @param {HTMLElement} elements.progressFill - Progress bar fill element
- * @param {HTMLElement} elements.levelLabel - Level name display
- * @param {HTMLElement} elements.budgetLabel - Budget display (challenge mode)
- * @param {HTMLElement} elements.visContainer - Visualisation wrapper (to show/hide)
- * @param {HTMLElement} elements.levelSelector - Level button container
- */
 export function initGame(elements) {
   const params = new URLSearchParams(window.location.search);
   const mode = params.get("mode") || MODES.EXPLORE;
   const startLevel = parseInt(params.get("level")) || 1;
   const nickname = params.get("nickname") || "player";
+
+  // Initialise connection status indicator
+  initConnectionStatus();
 
   const state = {
     mode,
@@ -162,6 +113,7 @@ export function initGame(elements) {
     vis: null,
     gameOver: false,
     submitted: false,
+    submitting: false,
     ghostPlayer: null,
     ghostState: null,
     ghostData: null,
@@ -184,9 +136,7 @@ export function initGame(elements) {
   return state;
 }
 
-/**
- * Load a level — create sliders, reset state, update UI.
- */
+/** Load a level — create sliders, reset state, update UI. */
 function loadLevel(state, elements) {
   const levelConfig = LEVELS.find((l) => l.id === state.currentLevel);
   if (!levelConfig) return;
@@ -245,10 +195,7 @@ function loadLevel(state, elements) {
   }
 }
 
-/**
- * Handle slider value changes — update function value, visualisation.
- * Fires continuously during drag (input event).
- */
+/** Handle slider input — update function value and visualisation. */
 function onSliderChange(values, state, elements, levelConfig) {
   state.currentValues = values;
 
@@ -275,10 +222,7 @@ function onSliderChange(values, state, elements, levelConfig) {
   }
 }
 
-/**
- * Handle slider release — decrement budget, record path, check game over.
- * Fires once on slider release (change event). Only active in Challenge/AI modes.
- */
+/** Handle slider release — decrement budget, record path, check game over. */
 function onSliderRelease(values, state, elements, levelConfig) {
   // Budget tracking only applies to Challenge and AI modes
   if (state.mode === MODES.EXPLORE) return;
@@ -305,14 +249,9 @@ function onSliderRelease(values, state, elements, levelConfig) {
   }
 }
 
-// ============================================================
 // Ghost Replay (AI Mode)
-// ============================================================
 
-/**
- * Fetch ghost data and start the ghost replay for the current level.
- * Updates the ghost display and overlays the ghost dot on visualisation.
- */
+/** Fetch ghost data and start replay for the current level. */
 async function startGhostReplay(state, elements, levelConfig) {
   try {
     const ghostData = await getGhost(levelConfig.id);
@@ -361,10 +300,7 @@ async function startGhostReplay(state, elements, levelConfig) {
   }
 }
 
-/**
- * Redraw the visualisation with the ghost dot overlaid.
- * The player dot is drawn first (via draw1D/draw2D), then the ghost dot on top.
- */
+/** Redraw visualisation with ghost dot overlaid. */
 function redrawWithGhost(state, elements, levelConfig) {
   if (!state.vis || !state.ghostState) return;
   if (levelConfig.dimensions > 2) return; // No visualisation for 3D+
@@ -382,22 +318,14 @@ function redrawWithGhost(state, elements, levelConfig) {
   }
 }
 
-// ============================================================
 // Score Submission
-// ============================================================
 
 const SCORES_STORAGE_KEY = "optimgame_scores";
 
-/**
- * Submit the player's score — store locally, POST to backend, and show result.
- * Validates that a nickname is set (Requirement 5.7).
- *
- * @param {object} state - Current game state
- * @param {object} elements - DOM element references
- */
+/** Submit the player's score — store locally, POST to backend, show result. */
 async function submitScore(state, elements) {
   // Prevent double submission
-  if (state.submitted) return;
+  if (state.submitted || state.submitting) return;
 
   // Validate nickname (Requirement 5.7)
   if (!state.nickname || state.nickname.trim() === "" || state.nickname === "player") {
@@ -405,8 +333,14 @@ async function submitScore(state, elements) {
     return;
   }
 
-  state.submitted = true;
+  state.submitting = true;
   state.gameOver = true;
+
+  // Show loading state on submit button
+  if (elements.submitBtn) {
+    elements.submitBtn.classList.add("btn--loading");
+    elements.submitBtn.disabled = true;
+  }
 
   // Get the current round (if any) for backend submission
   let roundId = null;
@@ -435,6 +369,7 @@ async function submitScore(state, elements) {
 
   // Submit to backend if we have a round
   let backendResult = null;
+  let submissionError = null;
   if (roundId) {
     try {
       // Backend expects path as array of position arrays (list[list[float]])
@@ -448,9 +383,23 @@ async function submitScore(state, elements) {
         round_id: roundId,
       });
     } catch (e) {
-      // Backend submission failed — localStorage backup is the fallback
-      console.warn("Backend score submission failed:", e.message);
+      // postScore already retries once — if we're here, both attempts failed
+      submissionError = e.message;
+      console.warn("Backend score submission failed after retry:", e.message);
     }
+  }
+
+  state.submitted = true;
+  state.submitting = false;
+
+  // Remove loading state from submit button
+  if (elements.submitBtn) {
+    elements.submitBtn.classList.remove("btn--loading");
+  }
+
+  // Show error toast if submission failed
+  if (submissionError) {
+    showErrorToast("Score saved locally. Server submission failed.");
   }
 
   // Unlock next level (level progression)
@@ -478,12 +427,7 @@ async function submitScore(state, elements) {
   }
 }
 
-/**
- * Store score data in localStorage as a backup.
- * Maintains an array of past submissions under the key 'optimgame_scores'.
- *
- * @param {object} scoreData - Score submission object
- */
+/** Store score in localStorage as backup. */
 function storeScoreLocally(scoreData) {
   try {
     const existing = localStorage.getItem(SCORES_STORAGE_KEY);
@@ -495,13 +439,7 @@ function storeScoreLocally(scoreData) {
   }
 }
 
-/**
- * Show the score result overlay after submission.
- *
- * @param {object} state - Current game state
- * @param {object} elements - DOM element references
- * @param {object|null} backendResult - Backend response with rank info (or null)
- */
+/** Show the score result overlay after submission. */
 function showScoreResult(state, elements, backendResult = null) {
   if (elements.finalScoreDisplay) {
     elements.finalScoreDisplay.textContent = `f(x) = ${state.currentScore.toFixed(4)}`;
@@ -544,17 +482,7 @@ function showScoreResult(state, elements, backendResult = null) {
   }
 }
 
-/**
- * Show the AI comparison summary in the score result overlay.
- * Displays player's result vs. the ghost's result side by side,
- * with a verdict indicating who performed better.
- *
- * Requirement 6.5: Display comparison summary when both ghost and player have
- * exhausted their budgets.
- *
- * @param {object} state - Current game state (must have ghostData set)
- * @param {object} elements - DOM element references
- */
+/** Show AI comparison summary (Requirement 6.5). */
 function showAiComparison(state, elements) {
   if (!elements.aiComparison) return;
 
@@ -622,13 +550,7 @@ function showAiComparison(state, elements) {
   elements.aiComparison.style.display = "block";
 }
 
-/**
- * Set up the submit button — show it in challenge/AI modes,
- * wire click handler.
- *
- * @param {object} state - Current game state
- * @param {object} elements - DOM element references
- */
+/** Set up submit button for challenge/AI modes. */
 function setupSubmitButton(state, elements) {
   if (!elements.submitSection || !elements.submitBtn) return;
 
@@ -648,9 +570,7 @@ function setupSubmitButton(state, elements) {
   });
 }
 
-/**
- * Update the function value display with colour coding.
- */
+/** Update function value display with colour coding. */
 function updateFnValueDisplay(value, elements) {
   if (!elements.fnValue) return;
 
@@ -695,9 +615,7 @@ function updateFnValueDisplay(value, elements) {
   }
 }
 
-/**
- * Update the budget display (only visible in challenge/AI modes).
- */
+/** Update budget display (challenge/AI modes only). */
 function updateBudgetDisplay(state, elements) {
   if (!elements.budgetLabel) return;
 
@@ -719,11 +637,7 @@ function updateBudgetDisplay(state, elements) {
   }
 }
 
-/**
- * Render level selector buttons.
- * In Challenge/AI modes, locked levels are disabled.
- * In Explore mode, all levels are always accessible.
- */
+/** Render level selector buttons. In Explore mode all levels accessible. */
 function renderLevelSelector(container, state, elements) {
   if (!container) return;
 
@@ -762,4 +676,27 @@ function renderLevelSelector(container, state, elements) {
 
     container.appendChild(btn);
   });
+}
+
+function showErrorToast(message) {
+  // Remove existing toast if any
+  const existing = document.querySelector(".error-toast");
+  if (existing) existing.remove();
+
+  const toast = document.createElement("div");
+  toast.className = "error-toast";
+  toast.textContent = message;
+  toast.setAttribute("role", "alert");
+  document.body.appendChild(toast);
+
+  // Trigger show animation
+  requestAnimationFrame(() => {
+    toast.classList.add("error-toast--visible");
+  });
+
+  // Auto-dismiss after 4 seconds
+  setTimeout(() => {
+    toast.classList.remove("error-toast--visible");
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
 }

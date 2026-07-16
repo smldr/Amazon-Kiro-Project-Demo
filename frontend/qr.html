@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1e1e2e">
+  <title>OptimGame — Scan to Play</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .qr-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: var(--space-xl);
+      gap: var(--space-xl);
+      text-align: center;
+    }
+
+    .qr-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .qr-subtitle {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      color: var(--text-secondary);
+      margin-top: var(--space-sm);
+    }
+
+    .qr-canvas-wrapper {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    #qr-canvas {
+      display: block;
+      width: clamp(200px, 40vmin, 400px);
+      height: clamp(200px, 40vmin, 400px);
+      image-rendering: pixelated;
+    }
+
+    .qr-url {
+      font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", "Courier New", monospace;
+      font-size: clamp(0.8rem, 2vw, 1.1rem);
+      color: var(--text-muted);
+      word-break: break-all;
+      max-width: 500px;
+    }
+
+    .qr-footer {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="qr-page">
+    <header>
+      <h1 class="qr-title">OptimGame</h1>
+      <p class="qr-subtitle">Scan to Play!</p>
+    </header>
+
+    <div class="qr-canvas-wrapper">
+      <canvas id="qr-canvas" width="400" height="400" aria-label="QR code linking to OptimGame"></canvas>
+    </div>
+
+    <p class="qr-url" id="qr-url"></p>
+
+    <p class="qr-footer">Find the global minimum. Beat the leaderboard.</p>
+  </main>
+
+  <script type="module">
+    import { renderQR } from "./js/qr.js";
+
+    const canvas = document.getElementById("qr-canvas");
+    const urlDisplay = document.getElementById("qr-url");
+
+    // Allow overriding via URL param: ?url=https://example.com
+    const params = new URLSearchParams(window.location.search);
+    const targetUrl = params.get("url") || window.location.origin;
+
+    urlDisplay.textContent = targetUrl;
+
+    try {
+      renderQR(canvas, targetUrl);
+    } catch (e) {
+      // Fallback: just show the URL prominently
+      canvas.style.display = "none";
+      urlDisplay.style.fontSize = "1.5rem";
+      urlDisplay.style.color = "var(--accent-primary)";
+    }
+  </script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#1e1e2e">
   <title>OptimGame — Leaderboard</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -223,6 +223,42 @@
       color: var(--text-muted);
     }
 
+    /* Action feedback toast */
+    .action-toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 500;
+      z-index: 300;
+      transition: transform var(--transition-slow);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .action-toast--visible {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .action-toast--success {
+      background: var(--green);
+      color: var(--crust);
+    }
+
+    .action-toast--error {
+      background: var(--red);
+      color: var(--crust);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .action-toast {
+        transition: none;
+      }
+    }
+
     /* Responsive: smaller screens */
     @media (max-width: 768px) {
       .leaderboard-page {
@@ -293,7 +329,7 @@
       </div>
 
       <div class="presenter-controls">
-        <button class="btn btn--ghost" id="controls-btn" style="font-size: 0.8rem;">
+        <button class="btn btn--ghost" id="controls-btn" style="font-size: 0.85rem; min-height: 44px;">
           Presenter
         </button>
       </div>
@@ -325,17 +361,26 @@
 
   <!-- Presenter Panel (hidden until PIN verified) -->
   <div id="presenter-panel" style="display: none; position: fixed; bottom: var(--space-lg); right: var(--space-lg); z-index: 100;">
-    <div class="card" style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+    <div class="card" style="display: flex; gap: var(--space-sm); flex-wrap: wrap; align-items: center;">
       <button class="btn btn--primary" id="start-round-btn">Start Round</button>
-      <button class="btn btn--secondary" id="reset-btn">Reset</button>
+      <button class="btn btn--secondary" id="unlock-ai-btn">Unlock AI</button>
+      <button class="btn btn--secondary" id="reset-btn" style="color: var(--red);">Reset</button>
       <button class="btn btn--ghost" id="lock-btn" style="font-size: 0.75rem;">Lock</button>
     </div>
   </div>
+
+  <!-- Action feedback toast -->
+  <div class="action-toast" id="action-toast" aria-live="polite"></div>
 
   <script type="module">
     // ============================================================
     // Leaderboard — Real-time WebSocket with polling fallback
     // ============================================================
+
+    import { initConnectionStatus, update as updateConnectionStatus, STATE as CS } from "./js/connection-status.js";
+
+    // Initialise connection status banner
+    initConnectionStatus();
 
     const tbody = document.getElementById("leaderboard-body");
     const emptyState = document.getElementById("empty-state");
@@ -353,8 +398,10 @@
     const pinCancel = document.getElementById("pin-cancel");
     const presenterPanel = document.getElementById("presenter-panel");
     const startRoundBtn = document.getElementById("start-round-btn");
+    const unlockAiBtn = document.getElementById("unlock-ai-btn");
     const resetBtn = document.getElementById("reset-btn");
     const lockBtn = document.getElementById("lock-btn");
+    const actionToast = document.getElementById("action-toast");
 
     // State
     let ws = null;
@@ -365,7 +412,21 @@
     let pollInterval = null;
     let reconnectTimeout = null;
     let reconnectDelay = 1000;
+    let toastTimer = null;
     const MAX_RECONNECT_DELAY = 10000;
+
+    // ============================================================
+    // Toast Feedback
+    // ============================================================
+
+    function showToast(message, type = "success") {
+      if (toastTimer) clearTimeout(toastTimer);
+      actionToast.textContent = message;
+      actionToast.className = `action-toast action-toast--${type} action-toast--visible`;
+      toastTimer = setTimeout(() => {
+        actionToast.classList.remove("action-toast--visible");
+      }, 3000);
+    }
 
     // ============================================================
     // Rendering
@@ -505,9 +566,11 @@
       if (connected) {
         wsDot.classList.remove("leaderboard-status__dot--disconnected");
         wsLabel.textContent = "Connected";
+        updateConnectionStatus(CS.CONNECTED);
       } else {
         wsDot.classList.add("leaderboard-status__dot--disconnected");
         wsLabel.textContent = "Reconnecting...";
+        updateConnectionStatus(CS.RECONNECTING);
       }
     }
 
@@ -555,7 +618,12 @@
         if (res.ok) {
           const round = await res.json();
           currentRoundId = round.id;
-          roundInfoEl.textContent = `Round active`;
+          roundInfoEl.textContent = "Round active";
+          // Update AI button state
+          if (round.ai_mode_unlocked) {
+            unlockAiBtn.textContent = "AI Unlocked";
+            unlockAiBtn.disabled = true;
+          }
         } else {
           roundInfoEl.textContent = "Round: —";
         }
@@ -588,6 +656,7 @@
       presenterPin = pin;
       pinOverlay.style.display = "none";
       presenterPanel.style.display = "block";
+      showToast("Presenter mode unlocked", "success");
     });
 
     pinInput.addEventListener("keydown", (e) => {
@@ -598,10 +667,12 @@
     lockBtn.addEventListener("click", () => {
       presenterPin = null;
       presenterPanel.style.display = "none";
+      showToast("Presenter mode locked", "success");
     });
 
     startRoundBtn.addEventListener("click", async () => {
       if (!presenterPin) return;
+      startRoundBtn.disabled = true;
       try {
         const res = await fetch("/api/rounds", {
           method: "POST",
@@ -617,24 +688,67 @@
           const round = await res.json();
           currentRoundId = round.id;
           roundInfoEl.textContent = "Round active";
+          unlockAiBtn.textContent = "Unlock AI";
+          unlockAiBtn.disabled = false;
+          showToast("Round started", "success");
         } else if (res.status === 403) {
-          alert("Invalid PIN");
+          showToast("Invalid PIN", "error");
           presenterPin = null;
           presenterPanel.style.display = "none";
+        } else {
+          showToast("Failed to start round", "error");
         }
       } catch (e) {
+        showToast("Network error — try again", "error");
         console.error("Failed to start round:", e);
+      } finally {
+        startRoundBtn.disabled = false;
+      }
+    });
+
+    unlockAiBtn.addEventListener("click", async () => {
+      if (!presenterPin || !currentRoundId) {
+        showToast("Start a round first", "error");
+        return;
+      }
+      unlockAiBtn.disabled = true;
+      try {
+        const res = await fetch(`/api/rounds/${currentRoundId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pin: presenterPin,
+            ai_mode_unlocked: true,
+          }),
+        });
+        if (res.ok) {
+          unlockAiBtn.textContent = "AI Unlocked";
+          showToast("AI mode unlocked for all players", "success");
+        } else if (res.status === 403) {
+          showToast("Invalid PIN", "error");
+          presenterPin = null;
+          presenterPanel.style.display = "none";
+          unlockAiBtn.disabled = false;
+        } else {
+          showToast("Failed to unlock AI", "error");
+          unlockAiBtn.disabled = false;
+        }
+      } catch (e) {
+        showToast("Network error — try again", "error");
+        unlockAiBtn.disabled = false;
+        console.error("Failed to unlock AI mode:", e);
       }
     });
 
     resetBtn.addEventListener("click", async () => {
       if (!presenterPin || !currentRoundId) {
-        alert("No active round to reset");
+        showToast("No active round to reset", "error");
         return;
       }
       if (!confirm("Reset the leaderboard? This deletes all scores for the current round.")) {
         return;
       }
+      resetBtn.disabled = true;
       try {
         const res = await fetch(
           `/api/rounds/${currentRoundId}/reset?pin=${encodeURIComponent(presenterPin)}`,
@@ -643,13 +757,19 @@
         if (res.ok) {
           renderLeaderboard([]);
           knownIds.clear();
+          showToast("Leaderboard reset", "success");
         } else if (res.status === 403) {
-          alert("Invalid PIN");
+          showToast("Invalid PIN", "error");
           presenterPin = null;
           presenterPanel.style.display = "none";
+        } else {
+          showToast("Failed to reset", "error");
         }
       } catch (e) {
+        showToast("Network error — try again", "error");
         console.error("Failed to reset leaderboard:", e);
+      } finally {
+        resetBtn.disabled = false;
       }
     });
 
@@ -659,6 +779,19 @@
 
     fetchRoundInfo();
     connectWebSocket();
+
+    // Listen for online/offline events to update connection status
+    window.addEventListener("offline", () => {
+      setConnectionStatus(false);
+      updateConnectionStatus(CS.OFFLINE);
+    });
+
+    window.addEventListener("online", () => {
+      if (ws && ws.readyState !== WebSocket.OPEN) {
+        reconnectDelay = 1000;
+        connectWebSocket();
+      }
+    });
   </script>
 </body>
 </html>

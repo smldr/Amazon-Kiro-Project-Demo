@@ -144,3 +144,66 @@ class TestResetLeaderboard:
     def test_reset_nonexistent_round_returns_404(self, client):
         resp = client.post(f"/api/rounds/fake-id/reset?pin={PIN}")
         assert resp.status_code == 404
+
+
+class TestUpdateRound:
+    """Tests for PATCH /api/rounds/{round_id}."""
+
+    def test_unlock_ai_mode(self, client):
+        # Create a round with AI mode locked
+        create_resp = client.post("/api/rounds", json={
+            "pin": PIN,
+            "mode": "challenge",
+            "levels_open": [1, 2, 3, 4],
+            "ai_mode_unlocked": False,
+        })
+        round_id = create_resp.json()["id"]
+        assert create_resp.json()["ai_mode_unlocked"] is False
+
+        # Unlock AI mode
+        resp = client.patch(f"/api/rounds/{round_id}", json={
+            "pin": PIN,
+            "ai_mode_unlocked": True,
+        })
+        assert resp.status_code == 200
+        assert resp.json()["ai_mode_unlocked"] is True
+
+    def test_update_round_with_invalid_pin_returns_403(self, client):
+        create_resp = client.post("/api/rounds", json={"pin": PIN})
+        round_id = create_resp.json()["id"]
+
+        resp = client.patch(f"/api/rounds/{round_id}", json={
+            "pin": WRONG_PIN,
+            "ai_mode_unlocked": True,
+        })
+        assert resp.status_code == 403
+
+    def test_update_nonexistent_round_returns_404(self, client):
+        resp = client.patch("/api/rounds/fake-id", json={
+            "pin": PIN,
+            "ai_mode_unlocked": True,
+        })
+        assert resp.status_code == 404
+
+    def test_update_round_without_pin_returns_422(self, client):
+        create_resp = client.post("/api/rounds", json={"pin": PIN})
+        round_id = create_resp.json()["id"]
+
+        resp = client.patch(f"/api/rounds/{round_id}", json={
+            "ai_mode_unlocked": True,
+        })
+        assert resp.status_code == 422
+
+    def test_update_levels_open(self, client):
+        create_resp = client.post("/api/rounds", json={
+            "pin": PIN,
+            "levels_open": [1, 2],
+        })
+        round_id = create_resp.json()["id"]
+
+        resp = client.patch(f"/api/rounds/{round_id}", json={
+            "pin": PIN,
+            "levels_open": [1, 2, 3, 4],
+        })
+        assert resp.status_code == 200
+        assert resp.json()["levels_open"] == [1, 2, 3, 4]

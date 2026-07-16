@@ -142,23 +142,23 @@ Build a web-based optimization game with 3 modes (Explore, Challenge, AI Ghost),
     - AI mode button unlocked when presenter activates via round controls
     - _Requirements: 6.6, 9.5_
 
-- [ ] 6. Polish + deployment prep
-  - [~] 6.1 Mobile responsiveness pass
+- [x] 6. Polish + deployment prep
+  - [x] 6.1 Mobile responsiveness pass
     - Test on real devices (iOS Safari, Android Chrome)
     - Verify touch targets, slider usability
     - _Requirements: 10.2, 10.3_
 
-  - [~] 6.2 Add QR code and presenter dashboard
+  - [x] 6.2 Add QR code and presenter dashboard
     - QR code page for slides
     - Presenter controls on leaderboard page (start round, unlock AI, reset)
     - _Requirements: 8.1, 8.4_
 
-  - [~] 6.3 Add loading states and error handling
+  - [x] 6.3 Add loading states and error handling
     - Offline detection, reconnection indicators
     - Score submission retry logic
     - _Requirements: 11.5_
 
-  - [~] 6.4 Final testing and Lighthouse audit
+  - [x] 6.4 Final testing and Lighthouse audit
     - Lighthouse mobile score > 90
     - All backend tests pass
     - Cross-browser verification

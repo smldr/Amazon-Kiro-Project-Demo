@@ -1,15 +1,6 @@
-/**
- * Visualisation module — Canvas-based 1D line plots and 2D contour heatmaps.
- *
- * Renders the Griewank function landscape and shows the player's current position.
- * Only active for levels with 1 or 2 dimensions.
- *
- * @module visualisation
- */
-
 import { griewank1D, griewank2D, linspace } from "./griewank.js";
 
-// Catppuccin Mocha colours (matching CSS vars)
+// Catppuccin Mocha colours
 const COLORS = {
   base: "#1e1e2e",
   surface0: "#313244",
@@ -24,11 +15,6 @@ const COLORS = {
   red: "#f38ba8",
 };
 
-/**
- * Create a visualisation renderer for a canvas element.
- * @param {HTMLCanvasElement} canvas - The canvas to draw on
- * @returns {object} Renderer with methods: draw1D(x, range), draw2D(x1, x2, range), clear(), resize()
- */
 export function createVisualisation(canvas) {
   const ctx = canvas.getContext("2d");
   let dpr = window.devicePixelRatio || 1;
@@ -54,11 +40,6 @@ export function createVisualisation(canvas) {
     ctx.fillRect(0, 0, w, h);
   }
 
-  /**
-   * Draw the 1D Griewank function with the player's current position.
-   * @param {number} currentX - Player's current x value
-   * @param {number[]} range - [min, max] range
-   */
   function draw1D(currentX, range) {
     const [min, max] = range;
     const w = canvas.width / dpr;
@@ -150,12 +131,6 @@ export function createVisualisation(canvas) {
     ctx.stroke();
   }
 
-  /**
-   * Draw the 2D Griewank contour heatmap with the player's current position.
-   * @param {number} x1 - Player's x₁ value
-   * @param {number} x2 - Player's x₂ value
-   * @param {number[]} range - [min, max] range (same for both axes)
-   */
   function draw2D(x1, x2, range) {
     const [min, max] = range;
     const w = canvas.width / dpr;
@@ -226,10 +201,6 @@ export function createVisualisation(canvas) {
     ctx.fill();
   }
 
-  /**
-   * Generate a heatmap ImageData for the 2D Griewank function.
-   * Uses a colour map from teal (low) to red (high).
-   */
   function generateHeatmap(min, max, width, height) {
     const imageData = ctx.createImageData(width, height);
     const data = imageData.data;
@@ -262,11 +233,6 @@ export function createVisualisation(canvas) {
     return imageData;
   }
 
-  /**
-   * Map a normalised value [0, 1] to an RGB colour.
-   * 0 = dark (near minimum) → 1 = bright (high value)
-   * Uses a palette-inspired gradient: base → teal → peach → red
-   */
   function heatColor(t) {
     // Custom gradient stops
     const stops = [
@@ -298,12 +264,6 @@ export function createVisualisation(canvas) {
     ];
   }
 
-  /**
-   * Draw a ghost dot on the 1D plot at a given x position (lavender).
-   * Must be called AFTER draw1D so it overlays on the existing landscape.
-   * @param {number} ghostX - Ghost's current x value
-   * @param {number[]} range - [min, max] range (same as draw1D)
-   */
   function drawGhostDot1D(ghostX, range) {
     const [min, max] = range;
     const w = canvas.width / dpr;
@@ -351,13 +311,6 @@ export function createVisualisation(canvas) {
     ctx.stroke();
   }
 
-  /**
-   * Draw a ghost dot on the 2D heatmap at a given (x1, x2) position (lavender).
-   * Must be called AFTER draw2D so it overlays on the existing heatmap.
-   * @param {number} x1 - Ghost's x₁ value
-   * @param {number} x2 - Ghost's x₂ value
-   * @param {number[]} range - [min, max] range (same as draw2D)
-   */
   function drawGhostDot2D(x1, x2, range) {
     const [min, max] = range;
     const w = canvas.width / dpr;

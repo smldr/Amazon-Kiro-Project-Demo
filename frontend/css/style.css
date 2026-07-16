@@ -183,6 +183,8 @@ h2 {
   align-items: center;
   justify-content: center;
   padding: 12px 24px;
+  min-height: 44px;
+  min-width: 44px;
   border: none;
   border-radius: var(--radius-md);
   background: var(--bg-elevated);
@@ -195,6 +197,7 @@ h2 {
   text-decoration: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .btn:hover {
@@ -246,6 +249,7 @@ h2 {
 .input {
   width: 100%;
   padding: 12px 16px;
+  min-height: 44px;
   background: var(--bg-surface);
   border: 1px solid var(--surface1);
   border-radius: var(--radius-md);
@@ -254,6 +258,7 @@ h2 {
   font-size: 1rem;
   outline: none;
   transition: border-color var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .input::placeholder {
@@ -325,6 +330,7 @@ h2 {
   align-items: center;
   gap: var(--space-md);
   padding: var(--space-sm) 0;
+  min-height: 44px;
 }
 
 .slider-row__label {
@@ -338,36 +344,58 @@ h2 {
   flex: 1;
   -webkit-appearance: none;
   appearance: none;
-  height: 6px;
+  height: 8px;
   background: var(--bg-surface);
   border-radius: var(--radius-full);
   outline: none;
   cursor: pointer;
+  /* Ensure 44px touch target for the track itself */
+  padding: 18px 0;
+  margin: -18px 0;
+  background-clip: content-box;
+}
+
+/* iOS needs explicit track styling */
+.slider-row__input::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+}
+
+.slider-row__input::-moz-range-track {
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  border: none;
 }
 
 .slider-row__input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--color-player);
-  border: 2px solid var(--bg-active);
+  border: 3px solid var(--bg-active);
   cursor: pointer;
   transition: transform var(--transition-fast);
+  /* Center thumb on track */
+  margin-top: -18px;
 }
 
 .slider-row__input::-webkit-slider-thumb:active {
-  transform: scale(1.2);
+  transform: scale(1.15);
 }
 
 .slider-row__input::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--color-player);
-  border: 2px solid var(--bg-active);
+  border: 3px solid var(--bg-active);
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .slider-row__value {
@@ -437,7 +465,9 @@ h2 {
 }
 
 .level-selector__btn {
-  padding: 8px 16px;
+  padding: 12px 16px;
+  min-height: 44px;
+  min-width: 44px;
   border: 1px solid var(--surface1);
   border-radius: var(--radius-md);
   background: var(--bg-surface);
@@ -446,6 +476,7 @@ h2 {
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .level-selector__btn:hover {
@@ -503,6 +534,56 @@ h2 {
    Responsive
    ============================================================ */
 
+/* Very small screens (320px minimum width support) */
+@media (max-width: 374px) {
+  :root {
+    --space-md: 12px;
+    --space-lg: 16px;
+  }
+
+  .container {
+    padding: var(--space-sm);
+  }
+
+  .fn-value {
+    font-size: 1.4rem;
+  }
+
+  .slider-row {
+    gap: var(--space-sm);
+  }
+
+  .slider-row__value {
+    min-width: 40px;
+    font-size: 0.7rem;
+  }
+
+  .card {
+    padding: var(--space-md);
+  }
+
+  .level-selector {
+    gap: var(--space-xs);
+  }
+
+  .level-selector__btn {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    min-height: 44px;
+  }
+}
+
+/* Small phones (375px–479px) */
+@media (min-width: 375px) and (max-width: 479px) {
+  .fn-value {
+    font-size: 1.6rem;
+  }
+
+  .game-page {
+    padding: var(--space-sm) var(--space-md);
+  }
+}
+
 @media (min-width: 480px) {
   .fn-value {
     font-size: 2.2rem;
@@ -523,6 +604,103 @@ h2 {
   .fn-value {
     font-size: 2.5rem;
   }
+}
+
+/* ============================================================
+   Mobile Touch & iOS-Specific
+   ============================================================ */
+
+/* Prevent iOS zoom on input focus (font-size must be >= 16px) */
+@media (max-width: 768px) {
+  .input {
+    font-size: 16px;
+  }
+}
+
+/* Ensure all anchor/link touch targets meet 44px minimum */
+a.btn {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile-specific layout adjustments (< 768px) */
+@media (max-width: 767px) {
+  /* Safe area insets for notched devices (iPhone X+) */
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .page {
+    padding: var(--space-md);
+    padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
+  }
+
+  /* Ensure level selector wraps gracefully on narrow screens */
+  .level-selector {
+    justify-content: center;
+  }
+
+  /* Cards should not overflow viewport */
+  .card {
+    padding: var(--space-md);
+    word-break: break-word;
+  }
+
+  /* Stack game content vertically on mobile */
+  .game-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  /* Slider container: ensure adequate spacing between sliders */
+  .slider-group {
+    gap: var(--space-md);
+  }
+
+  /* Larger slider track hitbox on mobile for easier dragging */
+  .slider-row__input {
+    height: 10px;
+    padding: 20px 0;
+    margin: -20px 0;
+  }
+
+  /* Mode buttons full width with proper spacing */
+  .mode-buttons .btn {
+    padding: 14px 24px;
+  }
+
+  /* Ensure submit button is easily tappable */
+  .submit-section .btn {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+}
+
+/* Ensure no horizontal overflow on mobile */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+.page,
+.container,
+.card,
+.slider-group,
+.level-selector {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Prevent any child from breaking viewport width */
+img, canvas, video, svg {
+  max-width: 100%;
+  height: auto;
 }
 
 /* ============================================================
@@ -615,4 +793,164 @@ h2 {
   background: rgba(166, 227, 161, 0.1);
   border-radius: var(--radius-sm);
   padding: var(--space-xs) var(--space-sm);
+}
+
+
+/* ============================================================
+   Connection Status Indicator
+   ============================================================ */
+
+.connection-status {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transform: translateY(-100%);
+  transition: transform var(--transition-normal), background-color var(--transition-fast);
+}
+
+.connection-status--connected {
+  /* Hidden when connected */
+  transform: translateY(-100%);
+  background: var(--teal);
+  color: var(--base);
+}
+
+.connection-status--reconnecting {
+  transform: translateY(0);
+  background: var(--peach);
+  color: var(--base);
+}
+
+.connection-status--offline {
+  transform: translateY(0);
+  background: var(--red);
+  color: var(--base);
+}
+
+.connection-status__icon {
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.connection-status__text {
+  line-height: 1;
+}
+
+/* Pulse animation for reconnecting state */
+.connection-status--reconnecting .connection-status__icon {
+  animation: pulse-icon 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .connection-status {
+    transition: none;
+  }
+  .connection-status--reconnecting .connection-status__icon {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   Loading States
+   ============================================================ */
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--surface1);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-spinner--sm {
+  width: 14px;
+  height: 14px;
+  border-width: 1.5px;
+}
+
+.loading-spinner--lg {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.btn--loading {
+  position: relative;
+  color: transparent;
+  pointer-events: none;
+}
+
+.btn--loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--surface1);
+  border-top-color: var(--base);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Error message toast */
+.error-toast {
+  position: fixed;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  background: var(--red);
+  color: var(--base);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 1001;
+  transition: transform var(--transition-slow);
+  max-width: 90%;
+  text-align: center;
+}
+
+.error-toast--visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner,
+  .btn--loading::after {
+    animation: none;
+    opacity: 0.6;
+  }
+  .error-toast {
+    transition: none;
+  }
 }

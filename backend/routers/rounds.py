@@ -128,6 +128,54 @@ def end_round(
     )
 
 
+@router.patch("/{round_id}", response_model=RoundResponse)
+def update_round(
+    round_id: str,
+    body: dict,
+    conn: sqlite3.Connection = Depends(get_db),
+):
+    """Update round properties (e.g., ai_mode_unlocked). PIN-protected."""
+    pin = body.get("pin")
+    if not pin:
+        raise HTTPException(status_code=422, detail="PIN required")
+    _verify_pin(pin)
+
+    row = conn.execute(
+        "SELECT * FROM rounds WHERE id = ?", (round_id,)
+    ).fetchone()
+
+    if row is None:
+        raise HTTPException(status_code=404, detail="Round not found")
+
+    # Update allowed fields
+    if "ai_mode_unlocked" in body:
+        conn.execute(
+            "UPDATE rounds SET ai_mode_unlocked = ? WHERE id = ?",
+            (int(bool(body["ai_mode_unlocked"])), round_id),
+        )
+
+    if "levels_open" in body:
+        conn.execute(
+            "UPDATE rounds SET levels_open = ? WHERE id = ?",
+            (json.dumps(body["levels_open"]), round_id),
+        )
+
+    if "mode" in body:
+        conn.execute(
+            "UPDATE rounds SET mode = ? WHERE id = ?",
+            (body["mode"], round_id),
+        )
+
+    conn.commit()
+
+    # Fetch updated row
+    updated = conn.execute(
+        "SELECT * FROM rounds WHERE id = ?", (round_id,)
+    ).fetchone()
+
+    return _row_to_round(updated)
+
+
 @router.post("/{round_id}/reset", status_code=200)
 def reset_leaderboard(
     round_id: str,
